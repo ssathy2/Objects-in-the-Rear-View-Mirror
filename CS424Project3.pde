@@ -5,6 +5,8 @@ final static int WALLHEIGHT = 2304;
 int displayWidth, displayHeight;
 static int scaleFactor;
 PImage bgImage;
+PShape svg;
+
 
 ControlP5 cp5;
 
@@ -26,6 +28,8 @@ void setup() {
   gPlotY1 = scaleFactor * 70;
   gPlotX2 = scaleFactor * (displayWidth - 300);
   gPlotY2 = scaleFactor * (displayHeight - 140);
+  
+  svg = loadShape("united_states.svg");
 }
 
 void draw() {
@@ -33,5 +37,6 @@ void draw() {
   background(bgImage);
   
   drawGLayout();
+  drawHeatMap();
 }
 
