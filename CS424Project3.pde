@@ -7,7 +7,6 @@ static int scaleFactor;
 PImage bgImage;
 PShape svg;
 
-
 ControlP5 cp5;
 
 void setup() {
@@ -30,6 +29,14 @@ void setup() {
   gPlotY2 = scaleFactor * (displayHeight - 140);
   
   svg = loadShape("united_states.svg");
+  
+  statesListLeft = gPlotX1 + (gPlotX2 - gPlotX1)/2*scaleFactor + 180*scaleFactor;
+  statesListWidth = 320*scaleFactor;
+  statesListHeight = (gPlotY2 - gPlotY1 - 40*scaleFactor)/5*scaleFactor;
+  for(int i = 0; i < states.length - 1; i++){
+    statesListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1 - 40*scaleFactor)/5)*scaleFactor*i;
+  }
+  statesListTop[states.length - 1] = gPlotY2+30*scaleFactor;
 }
 
 void draw() {
@@ -40,3 +47,13 @@ void draw() {
   drawHeatMap();
 }
 
+void mousePressed(){
+  if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth) {
+    statesListOldY = mouseY;
+    statesListMove = true;
+  }
+}
+
+void mouseReleased(){
+  statesListMove = false;
+}
