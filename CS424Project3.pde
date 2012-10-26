@@ -4,13 +4,16 @@ final static int WALLWIDTH = 8160;
 final static int WALLHEIGHT = 2304;
 int displayWidth, displayHeight;
 static int scaleFactor;
+DataBrowser db;
 PImage bgImage;
 PShape svg;
 
 ControlP5 cp5;
 
 void setup() {
-
+  // init databrowser obj
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6;
   displayHeight = WALLHEIGHT / 6;
