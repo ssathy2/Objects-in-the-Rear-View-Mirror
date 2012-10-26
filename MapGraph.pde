@@ -18,6 +18,7 @@ boolean statesListMove = false;
 float[] statesListTop = new float[states.length];
 
 void drawHeatMap() {
+  rectMode(CORNER);
   if (statesListMove){
     statesListMovement = mouseY - statesListOldY;
     statesListOldY = mouseY;
