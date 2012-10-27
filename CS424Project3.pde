@@ -32,14 +32,22 @@ void setup() {
   gPlotY2 = scaleFactor * (displayHeight - 140);
   
   svg = loadShape("united_states.svg");
+  svg.disableStyle();
   
   statesListLeft = gPlotX1 + (gPlotX2 - gPlotX1)/2*scaleFactor + 180*scaleFactor;
-  statesListWidth = 320*scaleFactor;
+  statesListWidth = 260*scaleFactor;
   statesListHeight = (gPlotY2 - gPlotY1 - 40*scaleFactor)/5*scaleFactor;
+  
+  statesListButtonLeft = statesListLeft + 10*scaleFactor;
+  statesListButtonWidth = 40;
+  statesListButtonHeight = statesListHeight-4*scaleFactor;
+  
   for(int i = 0; i < states.length - 1; i++){
     statesListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1 - 40*scaleFactor)/5)*scaleFactor*i;
+    statesListButtonTop[i] = statesListTop[i]+2*scaleFactor;
   }
   statesListTop[states.length - 1] = gPlotY2+30*scaleFactor;
+  statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
 }
 
 void draw() {
@@ -51,9 +59,25 @@ void draw() {
 }
 
 void mousePressed(){
-  if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth) {
-    statesListOldY = mouseY;
-    statesListMove = true;
+  if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
+    if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
+      if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
+        selectedState = 0;
+      }
+      else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
+        selectedState = states.length-1;
+      }
+      else{
+        for(int i = 1; i < statesListButtonTop.length-1; i++){
+          if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
+            selectedState = i;
+          }
+        }
+      }
+    }else{
+      statesListOldY = mouseY;
+      statesListMove = true;
+    }
   }
 }
 
