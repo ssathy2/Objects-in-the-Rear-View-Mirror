@@ -149,11 +149,29 @@ void drawHeatMap() {
   }
   //cp5?
   fill(240);
-  rect(490*scaleFactor, gPlotY1 + 15*scaleFactor, 257*scaleFactor, 40*scaleFactor);
-  textSize(24*scaleFactor);
-  fill(0,0,0);
+  rect(490*scaleFactor, gPlotY1 + 15*scaleFactor, 257*scaleFactor, 30*scaleFactor);
+  textSize(18*scaleFactor);
+  fill(40);
   textAlign(LEFT);
-  text(statesFull[selectedState], 500*scaleFactor, gPlotY1 + 42*scaleFactor);
+  text(statesFull[selectedState], 500*scaleFactor, gPlotY1 + 37*scaleFactor);
+  text("Accidents", 490*scaleFactor, gPlotY1 + 70*scaleFactor);
+  textAlign(RIGHT);
+  text(selectedState, 490*scaleFactor + 257*scaleFactor, gPlotY1 + 70*scaleFactor);
+  fill(110);
+  textAlign(LEFT);
+  text("Primary Filter1", 490*scaleFactor, gPlotY1 + 100*scaleFactor);
+  text("Primary Filter2", 490*scaleFactor, gPlotY1 + 130*scaleFactor);
+  text("Primary Filter3", 490*scaleFactor, gPlotY1 + 160*scaleFactor);
+  text("Primary Filter4", 490*scaleFactor, gPlotY1 + 190*scaleFactor);
+  text("Primary Filter5", 490*scaleFactor, gPlotY1 + 220*scaleFactor);
+  fill(#9400D3);
+  textSize(24);
+  textAlign(RIGHT);
+  text("50%", 490*scaleFactor + 257*scaleFactor, gPlotY1 + 102*scaleFactor);
+  text("10%", 490*scaleFactor + 257*scaleFactor, gPlotY1 + 132*scaleFactor);
+  text("9%", 490*scaleFactor + 257*scaleFactor, gPlotY1 + 162*scaleFactor);
+  text("8%", 490*scaleFactor + 257*scaleFactor, gPlotY1 + 192*scaleFactor);
+  text("5%", 490*scaleFactor + 257*scaleFactor, gPlotY1 + 222*scaleFactor);
   
   fill(40);
   PShape state_lines = svg.getChild("State_Lines");
