@@ -48,6 +48,18 @@ void setup() {
   }
   statesListTop[states.length - 1] = gPlotY2+30*scaleFactor;
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
+  
+  
+  timeSliderLeft = gPlotX1;
+  timeSliderTop = gPlotY2 + 107*scaleFactor;
+  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +100*scaleFactor;
+  timeSliderBottom = timeSliderTop + 5*scaleFactor;
+  timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
+  timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
+  timeSliderLowLeft = gPlotX1;
+  timeSliderLowRight = timeSliderLowLeft + 15*scaleFactor;
+  timeSliderHighLeft = timeSliderRight - 15*scaleFactor;
+  timeSliderHighRight = timeSliderHighLeft + 15*scaleFactor;
 }
 
 void draw() {
@@ -56,6 +68,7 @@ void draw() {
   
   drawGLayout();
   drawHeatMap();
+  drawTimeSlider();
 }
 
 void mousePressed(){
@@ -79,8 +92,20 @@ void mousePressed(){
       statesListMove = true;
     }
   }
+  else if(mouseY >= timeSliderButtonTop && mouseY <= timeSliderButtonBottom){
+    if(mouseX >= timeSliderLowLeft && mouseX <= timeSliderLowRight){
+      mouseXOld = mouseX;
+      timeSliderLowMove = true;
+    }
+    else if(mouseX >= timeSliderHighLeft && mouseX <= timeSliderHighRight){
+      mouseXOld = mouseX;
+      timeSliderHighMove = true;
+    }
+  }
 }
 
 void mouseReleased(){
   statesListMove = false;
+  timeSliderLowMove = false;
+  timeSliderHighMove = false;
 }

@@ -4,6 +4,7 @@ float gPlotX1, gPlotX2, gPlotY1, gPlotY2;
 
 void drawGLayout() {
 
+  rectMode(CORNER);
   strokeWeight(6);
   stroke(0);
   fill(250, 180);
