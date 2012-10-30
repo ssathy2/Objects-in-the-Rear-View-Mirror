@@ -34,12 +34,12 @@ void setup() {
   svg = loadShape("united_states.svg");
   svg.disableStyle();
   
-  statesListLeft = gPlotX1 + (gPlotX2 - gPlotX1)/2*scaleFactor + 180*scaleFactor;
-  statesListWidth = 260*scaleFactor;
+  statesListLeft = 491*scaleFactor+311*scaleFactor;
+  statesListWidth = 281*scaleFactor;
   statesListHeight = (gPlotY2 - gPlotY1 - 40*scaleFactor)/5*scaleFactor;
   
   statesListButtonLeft = statesListLeft + 10*scaleFactor;
-  statesListButtonWidth = 40;
+  statesListButtonWidth = 40*scaleFactor;
   statesListButtonHeight = statesListHeight-4*scaleFactor;
   
   for(int i = 0; i < states.length - 1; i++){
@@ -50,16 +50,16 @@ void setup() {
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
   
   
-  timeSliderLeft = gPlotX1;
+  timeSliderLeft = gPlotX1+15*scaleFactor;
   timeSliderTop = gPlotY2 + 115*scaleFactor;
-  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +100*scaleFactor;
+  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +72*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
   timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
   timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
-  timeSliderLowLeft = gPlotX1;
-  timeSliderLowRight = timeSliderLowLeft + 15*scaleFactor;
-  timeSliderHighLeft = timeSliderRight - 15*scaleFactor;
-  timeSliderHighRight = timeSliderHighLeft + 15*scaleFactor;
+  timeSliderLowLeft = timeSliderLeft - 15*scaleFactor;
+  timeSliderLowRight = timeSliderLeft;
+  timeSliderHighLeft = timeSliderRight;
+  timeSliderHighRight = timeSliderRight+15*scaleFactor;
 }
 
 void draw() {

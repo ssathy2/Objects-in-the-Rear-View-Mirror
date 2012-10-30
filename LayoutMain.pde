@@ -6,19 +6,15 @@ boolean timeSliderLowMove = false;
 boolean timeSliderHighMove = false;
 
 void drawTimeSlider(){
-  if(timeSliderLowMove){
-    if (mouseX - mouseXOld < timeSliderHighLeft - timeSliderLowRight && mouseX <= timeSliderRight && mouseX >= timeSliderLeft){
-      timeSliderLowLeft += mouseX - mouseXOld;
-      timeSliderLowRight += mouseX - mouseXOld;
-      mouseXOld = mouseX;
-    }
+  if(timeSliderLowMove && mouseX - mouseXOld < timeSliderHighLeft - timeSliderLowRight && timeSliderLowRight + mouseX - mouseXOld >= timeSliderLeft){
+    timeSliderLowLeft += mouseX - mouseXOld;
+    timeSliderLowRight += mouseX - mouseXOld;
+    mouseXOld = mouseX;
   }
-  if(timeSliderHighMove){
-    if (mouseX - mouseXOld > timeSliderLowRight - timeSliderHighLeft && mouseX <= timeSliderRight && mouseX >= timeSliderLeft){
-      timeSliderHighLeft += mouseX - mouseXOld;
-      timeSliderHighRight += mouseX - mouseXOld;
-      mouseXOld = mouseX;
-    }
+  if(timeSliderHighMove && mouseX - mouseXOld > timeSliderLowRight - timeSliderHighLeft && timeSliderHighLeft + mouseX - mouseXOld <= timeSliderRight){
+    timeSliderHighLeft += mouseX - mouseXOld;
+    timeSliderHighRight += mouseX - mouseXOld;
+    mouseXOld = mouseX;
   }
   fill(40);
   rectMode(CORNERS);
@@ -26,10 +22,15 @@ void drawTimeSlider(){
   fill(50);
   rect(timeSliderLowLeft, timeSliderButtonTop, timeSliderLowRight, timeSliderButtonBottom);
   rect(timeSliderHighLeft, timeSliderButtonTop, timeSliderHighRight, timeSliderButtonBottom);
-  fill(#9400D3);
+  fill(#FA8A11);
   rect(timeSliderLowRight, timeSliderButtonTop + 15*scaleFactor, timeSliderHighLeft, timeSliderButtonBottom-15*scaleFactor);
   
-  rectMode(CORNER);
-  fill(255);
-  rect(timesliderLowLeft - 10*scaleFactor, timeSliderButtonTop + 20*scaleFactor, timeSliderLowRight + 10*scaleFactor, timeSliderButtonTop + 10*scaleFactor);
+  fill(0);
+  rect(timeSliderLowLeft - 30*scaleFactor, timeSliderButtonTop - 25*scaleFactor, timeSliderLowRight, timeSliderButtonTop - 5*scaleFactor);
+  rect(timeSliderHighLeft, timeSliderButtonTop - 25*scaleFactor, timeSliderHighRight + 30*scaleFactor, timeSliderButtonTop - 5*scaleFactor);
+  fill(240);
+  textAlign(CENTER);
+  textSize(12*scaleFactor);
+  text(Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100) + "%", timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+  text(Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100) + "%", timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
 }
