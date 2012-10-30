@@ -51,7 +51,7 @@ void setup() {
   
   
   timeSliderLeft = gPlotX1;
-  timeSliderTop = gPlotY2 + 107*scaleFactor;
+  timeSliderTop = gPlotY2 + 115*scaleFactor;
   timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +100*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
   timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;

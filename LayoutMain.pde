@@ -28,4 +28,8 @@ void drawTimeSlider(){
   rect(timeSliderHighLeft, timeSliderButtonTop, timeSliderHighRight, timeSliderButtonBottom);
   fill(#9400D3);
   rect(timeSliderLowRight, timeSliderButtonTop + 15*scaleFactor, timeSliderHighLeft, timeSliderButtonBottom-15*scaleFactor);
+  
+  rectMode(CORNER);
+  fill(255);
+  rect(timesliderLowLeft - 10*scaleFactor, timeSliderButtonTop + 20*scaleFactor, timeSliderLowRight + 10*scaleFactor, timeSliderButtonTop + 10*scaleFactor);
 }

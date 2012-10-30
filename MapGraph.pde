@@ -13,7 +13,7 @@ String[] statesFull = {"Alaska","Alabama","Arkansas","Arizona","California","Col
 "Illinois","Indiana","Kansas","Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York",
 "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
-int selectedState = states.length - 8;
+int selectedState = 14;
 
 float statesListLeft, statesListWidth, statesListHeight, statesListMovement, statesListOldY, statesListButtonLeft, statesListButtonWidth, statesListButtonHeight;
 
@@ -52,23 +52,11 @@ void drawHeatMap() {
     PShape state = svg.getChild(states[i]);
     if(i == selectedState){
       fill(#9400D3);
-//      PVector vertex_temp;
-//      float state_xoffset = Float.MAX_VALUE;
-//      float state_yoffset = Float.MAX_VALUE;
-//      for (int j=0; j < state.getVertexCount(); j++) {
-//        state_xoffset = min(state.getVertexX(j), state_xoffset);
-//        state_yoffset = min(state.getVertexY(j), state_yoffset);
-//      }
-//      state.translate(-state_xoffset, -state_yoffset);
-//      shape(state, 500*scaleFactor, 120*scaleFactor, 1/2* (gPlotX1 + 281 *scaleFactor), 1/2*gPlotY2);
-//      state.translate(state_xoffset, state_yoffset);
     }
     else{
       fill(heat_red(i), heat_green(i), heat_blue(i));
-      //shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2);
     }
     shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2);
-//    shape(state, gPlotX1, gPlotY1, gPlotX1 + (gPlotX2 - gPlotX1)/2 * scaleFactor, gPlotY2);
     if(statesListTop[i] <= gPlotY2 + 30 && statesListTop[i] >= gPlotY1 + 16*scaleFactor){
       rect(statesListLeft, statesListTop[i], statesListWidth, statesListHeight);
       fill(240);
