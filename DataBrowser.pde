@@ -24,6 +24,15 @@ class DataBrowser {
     initializeBodyHashMap();
     initializeDrugsHashMap();
     initializeARFHashMap();
+    
+    ArrayList<String> w = new ArrayList<String>(atm.keySet());
+    ArrayList<String> b = new ArrayList<String>(body.keySet());
+    ArrayList<String> a = new ArrayList<String>(arf.keySet());
+    ArrayList<String> d = new ArrayList<String>(drugs.keySet());
+    
+    String blah = generateQueryString("illinois", false, -1, -1, 2003, w, b, a, d, true, true, 12, 69);
+    println(blah);
+    
   }
   
   private void initializeBodyHashMap() {
@@ -230,10 +239,22 @@ class DataBrowser {
     String query = "select crashid, iacchr, iaccday, iaccmon, crashyear";
     
     query += (wantGeoData)?(", latitude, longitude from "+state.toLowerCase()+" where "):" from "+state.toLowerCase()+" where";
-    
+              
+    if(d != -1) {
+      query += " iaccday=" + d;       
+    }
+    if( m != -1) {
+      if( d != -1) query += " and iaccmon=" + m;
+      else query += " iaccmon=" + m;  
+    }
+    if( yr != -1) {
+      if( m != -1 || d != -1) query += " and crashyear=" + yr;
+      else query += " crashyear=" + yr; 
+    }
+      
     // tack on the weather conditions
     if(!weather.isEmpty()) {
-      query += " iatmcond in (";
+      query += " and iatmcond in (";
       
       for (String atmCond : atm.keySet()) {
         for(int j = 0; j < weather.size(); j++) {
@@ -250,60 +271,72 @@ class DataBrowser {
     }
     
     if(!bodyTypes.isEmpty()) {
-      query += "and ibody in (";     
+      query += " and ibody in (";     
       for (String bodyName : body.keySet()) {
         for(int j = 0; j < bodyTypes.size(); j++) {
           if(bodyName.toLowerCase().contains(bodyTypes.get(j).toLowerCase())) {
               ArrayList<Integer> tmp = body.get(bodyName);
+              String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(i != (tmp.size() - 1)) {
-                    query += tmp.get(i) + ",";                 
+                if(j == 0 && i == 0){
+                  query += tmp.get(i);  
                 }
                 else {
-                    query += tmp.get(i) + ")";
+                  p += " " + tmp.get(i);                 
                 }
               }
+              p = p.replace(' ', ',');
+              query += p;
             }
           }
-        } 
+        }
+       query += ")"; 
       }  
     
     if(!arfArr.isEmpty()) {
-      query += "and iarf1 in (";     
+      query += " and iarf1 in (";     
       for (String arfName : arf.keySet()) {
         for(int j = 0; j < arfArr.size(); j++) {
           if(arfName.toLowerCase().contains(arfArr.get(j).toLowerCase())) {
               ArrayList<Integer> tmp = arf.get(arfName);
+              String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(i != (tmp.size() - 1)) {
-                    query += tmp.get(i) + ",";                 
+                if(j == 0 && i == 0){
+                  query += tmp.get(i);  
                 }
                 else {
-                    query += tmp.get(i) + ")";
+                  p += " " + tmp.get(i);                 
                 }
               }
+              p = p.replace(' ', ',');
+              query += p;
             }
           }
-        } 
+        }
+       query += ")"; 
       }  
      
      if(!drugsArr.isEmpty()) {
-      query += "and idrugres in (";     
+      query += " and idrugres1 in (";     
       for (String drugName : drugs.keySet()) {
         for(int j = 0; j < drugsArr.size(); j++) {
           if(drugName.toLowerCase().contains(drugsArr.get(j).toLowerCase())) {
               ArrayList<Integer> tmp = drugs.get(drugName);
+              String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(i != (tmp.size() - 1)) {
-                    query += tmp.get(i) + ",";                 
+                if(j == 0 && i == 0){
+                  query += tmp.get(i);  
                 }
                 else {
-                    query += tmp.get(i) + ")";
+                  p += " " + tmp.get(i);                 
                 }
               }
+              p = p.replace(' ', ',');
+              query += p;
             }
           }
         }
+        query += ")";
        if (drugsArr.contains("Alcohol")) {
          query += " and ialcres between 8 and 94";
        } 
