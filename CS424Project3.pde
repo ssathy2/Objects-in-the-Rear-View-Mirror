@@ -4,7 +4,6 @@ import com.modestmaps.geo.*;
 import com.modestmaps.providers.*;
 
 import controlP5.*;
-import java.util.*;
 
 final static int WALLWIDTH = 8160;
 final static int WALLHEIGHT = 2304;
@@ -13,6 +12,13 @@ static int scaleFactor;
 DataBrowser db;
 PImage bgImage;
 PShape svg;
+
+//Boolean arrays to hold values of radiobuttons
+float[] driverAgeArr, driverGenderArr;
+float[] vehiclesRoadArr, vehiclesNonRoadArr;
+float[] weatherArr;
+float[] accidentAutomobileArr, accidentSurfaceArr;
+float[] intoxicantsArr;
 
 ControlP5 cp5;
 
@@ -30,8 +36,8 @@ void setup() {
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
-  displayWidth = WALLWIDTH / 6;
-  displayHeight = WALLHEIGHT / 6;
+  displayWidth = WALLWIDTH / 6 * scaleFactor;
+  displayHeight = WALLHEIGHT / 6 * scaleFactor;
 
   size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
   
@@ -43,8 +49,20 @@ void setup() {
   
   gPlotX1 = scaleFactor * 100;
   gPlotY1 = scaleFactor * 70;
-  gPlotX2 = scaleFactor * (displayWidth - 300);
-  gPlotY2 = scaleFactor * (displayHeight - 140);
+  gPlotX2 = displayWidth - 300*scaleFactor;
+  gPlotY2 = displayHeight - 140*scaleFactor;
+//  gPlotX2 = displayWidth - 190*scaleFactor;
+//  gPlotY2 = displayHeight - 70*scaleFactor;
+  
+  //Holds True or False for radiobuttons in filter.
+  driverAgeArr = new float[7];
+  driverGenderArr = new float[2];
+  vehiclesRoadArr = new float[8];
+  vehiclesNonRoadArr =new float[3];
+  weatherArr = new float[9];
+  accidentAutomobileArr = new float[7];
+  accidentSurfaceArr = new float[5];
+  intoxicantsArr = new float[8];
   
   svg = loadShape("united_states.svg");
   svg.disableStyle();
@@ -100,22 +118,20 @@ void setup() {
   timeSliderLowRight = timeSliderLeft;
   timeSliderHighLeft = timeSliderRight;
   timeSliderHighRight = timeSliderRight+15*scaleFactor;
+
+
+  drawLayoutMain();
 }
 
 void draw() {
   
-  //if(false){
   background(bgImage);
   drawGLayout();
-  //}
-  //else{
-  //  background(40);
-  //}
-  //if (false){
+  if (mapIsShown){
     drawHeatMap();
-  //}else{
-  //  drawPlotMap();
-  //}
+  }
+  else{
+  }
   drawTimeSlider();
 }
 
