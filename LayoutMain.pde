@@ -6,6 +6,7 @@ boolean timeSliderLowMove = false;
 boolean timeSliderHighMove = false;
 
 void drawTimeSlider(){
+  strokeWeight(0);
   if(timeSliderLowMove && mouseX - mouseXOld < timeSliderHighLeft - timeSliderLowRight && timeSliderLowRight + mouseX - mouseXOld >= timeSliderLeft){
     timeSliderLowLeft += mouseX - mouseXOld;
     timeSliderLowRight += mouseX - mouseXOld;

@@ -13,6 +13,19 @@ int[] statesValue = {50,49,48,47,46,45,44,43,42,41,40,39,38,37,
 36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,
 14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
 
+String[] accidents = {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","IA","ID",
+"IL","IN","KS","KY","LA","MA","MD","ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY",
+"OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"};
+
+String[] accidentsFull = {"State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake",
+"State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake",
+"State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake",
+"State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake","State/Lake"};
+
+int[] accidentsValue = {50,49,48,47,46,45,44,43,42,41,40,39,38,37,
+36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,
+14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
+
 String[] statesFull = {"Alaska","Alabama","Arkansas","Arizona","California","Colorado","Connecticut","District of Columbia","Deleware","Florida","Georgia","Hawaii","Iowa","Idaho",
 "Illinois","Indiana","Kansas","Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York",
 "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
@@ -20,13 +33,18 @@ String[] statesFull = {"Alaska","Alabama","Arkansas","Arizona","California","Col
 int selectedState = 14;
 
 float statesListLeft, statesListWidth, statesListHeight, statesListMovement, statesListOldY, statesListButtonLeft, statesListButtonWidth, statesListButtonHeight;
+float accidentsListLeft, accidentsListWidth, accidentsListHeight, accidentsListMovement, accidentsListOldY, accidentsListButtonLeft, accidentsListButtonWidth, accidentsListButtonHeight;
 
 float friction = 15.0/16.0;
 
 boolean statesListMove = false;
+boolean accidentsListMove = false;
 
 float[] statesListTop = new float[states.length];
 float[] statesListButtonTop = new float[states.length];
+
+float[] accidentsListTop = new float[states.length];
+float[] accidentsListButtonTop = new float[states.length];
 
 void drawHeatMap() {
   rectMode(CORNER);
@@ -144,7 +162,6 @@ void drawHeatMap() {
   textSize(28*scaleFactor);
   fill(40);
   textAlign(CENTER);
-  System.out.println(490-gPlotX1);
   text(statesFull[selectedState], 511*scaleFactor+257*scaleFactor/2, gPlotY1 + 37*scaleFactor);
   textSize(18*scaleFactor);
   textAlign(LEFT);
@@ -170,6 +187,89 @@ void drawHeatMap() {
   fill(40);
   PShape state_lines = svg.getChild("State_Lines");
   PShape separator = svg.getChild("separator");
+}
+
+void drawPlotMap(){
+  strokeWeight(0);
+  rectMode(CORNER);
+  map.draw();
+  Point2f p = map.locationPoint(locationChicago);
+  fill(#FA8A11);
+  rect(p.x, p.y, 10, 10, 5);
+  
+  
+  
+  rectMode(CORNER);
+  if (accidentsListMove){
+    accidentsListMovement = mouseY - accidentsListOldY;
+    accidentsListOldY = mouseY;
+    for (int i = 0; i < accidents.length; i++){
+      accidentsListTop[i]+=accidentsListMovement;
+      accidentsListButtonTop[i] = accidentsListTop[i] + 2*scaleFactor;
+    }
+  }
+  else {
+    if (abs(accidentsListMovement) > 1){
+      for (int i = 0; i < accidents.length; i++){
+        accidentsListTop[i]+=accidentsListMovement;
+        accidentsListButtonTop[i] = accidentsListTop[i] + 2*scaleFactor;
+      }
+      accidentsListMovement = accidentsListMovement*friction;
+    }
+  }
+  
+  noStroke();
+  
+  fill(0);
+  textSize(12*scaleFactor);
+  for (int i = accidents.length - 1; i >= 0; i--) {
+    PShape state = svg.getChild(accidents[i]);
+    if(i < 5){
+      fill(#FA8A11);
+    }else{
+      fill(40);
+    }
+    if(accidentsListTop[i] <= gPlotY2 + 30 && accidentsListTop[i] >= gPlotY1 + 16*scaleFactor){
+      rect(accidentsListLeft, accidentsListTop[i], accidentsListWidth, accidentsListHeight);
+      fill(240);
+      rect(accidentsListButtonLeft, accidentsListButtonTop[i], accidentsListButtonWidth, accidentsListButtonHeight);
+      fill(40);
+      textAlign(LEFT);
+      text("View", accidentsListButtonLeft+6*scaleFactor, accidentsListTop[i] + 2*accidentsListHeight/3);
+      fill(240);
+      textAlign(LEFT);
+      text(accidentsFull[i], accidentsListLeft+accidentsListButtonWidth+20*scaleFactor, accidentsListTop[i] + 2*accidentsListHeight/3);
+      textAlign(RIGHT);
+      text(accidentsValue[i], accidentsListLeft+accidentsListWidth - 10*scaleFactor, accidentsListTop[i] + 2*accidentsListHeight/3);
+    }
+  }
+  
+  
+  //Pull back into list bounds
+  if (accidents.length > 7 && accidentsListTop[accidents.length-1] < gPlotY1+16*scaleFactor + accidentsListHeight*7){
+    float temp = gPlotY1+16*scaleFactor + accidentsListHeight*7 - accidentsListTop[accidents.length - 1];
+    for(int i = 0; i < accidents.length; i++){
+      if (temp < 2){
+        accidentsListTop[i]+=temp; 
+      }
+      else{
+        accidentsListTop[i] += temp*friction;
+      }
+    }
+  }
+  if (accidentsListTop[0] > gPlotY1+16*scaleFactor){
+    float temp = accidentsListTop[0] - gPlotY1+16*scaleFactor;
+    System.out.println(temp);
+    for(int i = 0; i < accidents.length; i++){
+      if (temp < 2){
+        accidentsListTop[i]-=temp; 
+      }
+      else{
+        accidentsListTop[i] -= temp*friction;
+      
+      }
+    }
+  }
 }
 
 float heat_red(int a){
