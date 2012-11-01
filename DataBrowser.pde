@@ -161,7 +161,7 @@ class DataBrowser {
       while(msql.next()) {
         int month = msql.getInt(state.toLowerCase()+".iaccmon");
         if(!monthCount.containsKey(month)) {
-          monthCount.put(month, 0); 
+          monthCount.put(month, 1); 
         } else {
           monthCount.put(month, monthCount.get(month) + 1);
         }        
@@ -180,7 +180,7 @@ class DataBrowser {
       while(msql.next()) {
         int day = msql.getInt(state.toLowerCase()+".iaccday");
         if(!dayCount.containsKey(day)) {
-          dayCount.put(day, 0); 
+          dayCount.put(day, 1); 
         } else {
           dayCount.put(day, dayCount.get(day) + 1);
         }        
@@ -191,8 +191,23 @@ class DataBrowser {
   }
   
   // TODO
-  public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
-    return null;
+  public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
+    String query = generateQueryString(state, false, d, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    
+    HashMap<Integer, Integer> hourCount = new HashMap<Integer, Integer>();
+    if (msql.connect()) {
+      msql.query(query);
+      while(msql.next()) {
+        int hour = msql.getInt(state.toLowerCase()+".iacchr");
+        if(!hourCount.containsKey(hour)) {
+          hourCount.put(hour, 1); 
+        } else {
+          hourCount.put(hour, hourCount.get(hour) + 1);
+        }        
+      }
+    }
+    
+    return hourCount;
   } 
   
   // TODO
@@ -212,13 +227,10 @@ class DataBrowser {
   
   // This helper method is ungodly messy...man, I could use a drink right about now...
   private String generateQueryString(String state, boolean wantGeoData, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    String query = "select crashid, iaccday, iaccmon, crashyear";
+    String query = "select crashid, iacchr, iaccday, iaccmon, crashyear";
     
-    query += (wantGeoData?(", latitude, longitude from "+state.toLowerCase()+" where "):" from "+state.toLowerCase()+" where");
+    query += (wantGeoData)?(", latitude, longitude from "+state.toLowerCase()+" where "):" from "+state.toLowerCase()+" where";
     
-    if( d != -1){query += (" iaccday=" + d + " and");}
-    if( m != -1){query += (" iaccmon=" + m + " and");}
-     
     // tack on the weather conditions
     if(!weather.isEmpty()) {
       query += " iatmcond in (";

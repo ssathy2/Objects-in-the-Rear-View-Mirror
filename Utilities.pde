@@ -10,7 +10,7 @@ class Point {
 
 class Crash {
   int crashId;
-  Data crashDate;
+  Date crashDate;
   Point coordinates;
     
   
