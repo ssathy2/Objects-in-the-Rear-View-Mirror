@@ -168,6 +168,7 @@ class DataBrowser {
   
   // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, false, -1, -1, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
     
@@ -188,6 +189,7 @@ class DataBrowser {
   }
   
   public HashMap<Integer, Integer> getCrashDayNumbersForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, false, -1, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
 
@@ -209,6 +211,7 @@ class DataBrowser {
   
   // TODO
   public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, false, d, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
 
@@ -230,6 +233,7 @@ class DataBrowser {
   
   // Gets you all of the crash points and CDate for each crash for that entire year with the factos passed in
   public HashMap<CDate, Point> getMonthGeoDataForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, true, -1, -1, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);    
     println("Query: " + query + "\n");
 
@@ -255,6 +259,7 @@ class DataBrowser {
   
   // TODO - Gets you all of the crash points and CDate for each crash for that entire month for the year with the factos passed in
   public HashMap<CDate, Point> getDayGeoDataForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, true, -1, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
     
@@ -280,6 +285,7 @@ class DataBrowser {
   
   // TODO
   public HashMap<CDate, Point> getHourGeoDataForMonthYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    state = state.replace(' ', '_');
     String query = generateQueryString(state, true, d, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
     
