@@ -1,4 +1,9 @@
 import de.bezier.data.sql.*;
+/*
+  Class that interacts with DB to get data based on the methods in the class
+  TODO: CACHING BRO
+*/
+
 
 class DataBrowser {
   private MySQL msql;
@@ -20,7 +25,7 @@ class DataBrowser {
     atm.put("Blank", -1); atm.put("No Adverse Atmospheric Conditions", 1); atm.put("Rain", 2); atm.put("Sleet (Hail)", 3); atm.put("Snow", 4); atm.put("Fog", 5); atm.put("Rain And Fog", 6); atm.put("Sleet And Fog", 7); atm.put("Other(Smog, Smoke, Blowing Sand Or Dust)", 8); atm.put("Unknown", 9);
     //Crash factors
     //cf = new HashMap<Integer, String>();
-    //cf.put("Blank", -1); cf.put("None", 0); cf.put("Inadequate Warning Of Exits, Lanes Narrowing, Traffic Controls, Etc.", 1); cf.put("Shoulder Design Or Condition", 2); cf.put("Other Construction-Created Condition", 3); cf.put("No Or Obscured Pavement Marking", 4); cf.put("Surface Under Water", 5); cf.put("Inadequate Construction Or Poor Design Of Roadway,Bridge, Etc.", 6); cf.put(7,"Surface Washed Out(caved-in, Road Slippage)"); cf.put(14,"Motor Vehicle In Transport Struck By Falling Cargo,or Something That Came Loose From Or Something That Was Set In Motion By A Vehicle"); cf.put(15,"Non-occupant Struck By Falling Cargo, Or Something That Came Loose From, Or Something That Was Set In Motion By A Vehicle"); cf.put(16,"Non-occupant Struck Vehicle"); cf.put(17,"Vehicle Set-in-motion By Non-driver"); cf.put(18, "Date Of Accident And Date Of EMS Notification Were Not The Same Day"); cf.put(19,"Recent/Previous Accident Scene Nearby"); cf.put(20, "Police Pursuit Involved"); cf.put(21,"Within Designated School Zone"); cf.put(22,"Speed Limit Is A Statutory Limit As Recorded Or Was Determined As This State's basic rule"); cf.put(99,"Unknown");
+    //cf.put("Blank", -1); cf.put("None", 0); cf.put("Inadequate Warning Of Exits, Lanes Narrowing, Traffic Controls, Etc.", 1); cf.put("Shoulder Design Or Condition", 2); cf.put("Other Construction-Created Condition", 3); cf.put("No Or Obscured Pavement Marking", 4); cf.put("Surface Under Water", 5); cf.put("Inadequate Construction Or Poor Design Of Roadway,Bridge, Etc.", 6); cf.put(7,"Surface Washed Out(caved-in, Road Slippage)"); cf.put(14,"Motor Vehicle In Transport Struck By Falling Cargo,or Something That Came Loose From Or Something That Was Set In Motion By A Vehicle"); cf.put(15,"Non-occupant Struck By Falling Cargo, Or Something That Came Loose From, Or Something That Was Set In Motion By A Vehicle"); cf.put(16,"Non-occupant Struck Vehicle"); cf.put(17,"Vehicle Set-in-motion By Non-driver"); cf.put(18, "CDate Of Accident And CDate Of EMS Notification Were Not The Same Day"); cf.put(19,"Recent/Previous Accident Scene Nearby"); cf.put(20, "Police Pursuit Involved"); cf.put(21,"Within Designated School Zone"); cf.put(22,"Speed Limit Is A Statutory Limit As Recorded Or Was Determined As This State's basic rule"); cf.put(99,"Unknown");
     initializeBodyHashMap();
     initializeDrugsHashMap();
     initializeARFHashMap();
@@ -30,8 +35,9 @@ class DataBrowser {
     ArrayList<String> a = new ArrayList<String>(arf.keySet());
     ArrayList<String> d = new ArrayList<String>(drugs.keySet());
     
-    String blah = generateQueryString("illinois", false, -1, -1, 2003, w, b, a, d, true, true, 12, 69);
-    println(blah);
+    /*HashMap<CDate, Point> blah = getMonthGeoDataForYear("illinois", 2004, w, b, a, d, true, true, 12, 69);
+    
+    println(blah.size());*/
     
   }
   
@@ -163,6 +169,7 @@ class DataBrowser {
   // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     String query = generateQueryString(state, false, -1, -1, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    println("Query: " + query + "\n");
     
     HashMap<Integer, Integer> monthCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
@@ -182,7 +189,8 @@ class DataBrowser {
   
   public HashMap<Integer, Integer> getCrashDayNumbersForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     String query = generateQueryString(state, false, -1, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
-    
+    println("Query: " + query + "\n");
+
     HashMap<Integer, Integer> dayCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
       msql.query(query);
@@ -202,7 +210,8 @@ class DataBrowser {
   // TODO
   public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     String query = generateQueryString(state, false, d, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
-    
+    println("Query: " + query + "\n");
+
     HashMap<Integer, Integer> hourCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
       msql.query(query);
@@ -219,19 +228,79 @@ class DataBrowser {
     return hourCount;
   } 
   
-  // TODO
-  public HashMap<Date, Point> getMonthGeoDataForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    return null;
+  // Gets you all of the crash points and CDate for each crash for that entire year with the factos passed in
+  public HashMap<CDate, Point> getMonthGeoDataForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    String query = generateQueryString(state, true, -1, -1, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);    
+    println("Query: " + query + "\n");
+
+    HashMap<CDate, Point> monthCount = new HashMap<CDate, Point>();
+    if (msql.connect()) {
+      msql.query(query);
+      while(msql.next()) {
+        String lat = msql.getString(state.toLowerCase()+".latitude");
+        String longitude = msql.getString(state.toLowerCase()+".longitude");
+        
+        if( !lat.equals(".") && !longitude.equals(".")) {
+          Point p = new Point(lat, longitude);
+          CDate d = new CDate(msql.getInt(state.toLowerCase()+".iaccmon"),
+                            -1,
+                            yr,
+                            -1);
+          monthCount.put(d, p);                
+        }        
+      }
+    }
+    return monthCount;
+  }
+  
+  // TODO - Gets you all of the crash points and CDate for each crash for that entire month for the year with the factos passed in
+  public HashMap<CDate, Point> getDayGeoDataForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    String query = generateQueryString(state, true, -1, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
+    println("Query: " + query + "\n");
+    
+    HashMap<CDate, Point> dayCount = new HashMap<CDate, Point>();
+    if (msql.connect()) {
+      msql.query(query);
+      while(msql.next()) {
+        String lat = msql.getString(state.toLowerCase()+".latitude");
+        String longitude = msql.getString(state.toLowerCase()+".longitude");
+        
+        if( !lat.equals(".") && !longitude.equals(".")) {
+          Point p = new Point(lat, longitude);
+          CDate d = new CDate(m,
+                              msql.getInt(state.toLowerCase()+".iaccday"),
+                              yr,
+                              -1);
+          dayCount.put(d, p);                             
+        }
+      }
+    }
+    return dayCount;
   }
   
   // TODO
-  public HashMap<Date, Point> getDayGeoDataForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    return null;
-  }
-  
-  // TODO
-  public HashMap<Date, Point> getHourGeoDataForMonthYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    return null;
+  public HashMap<CDate, Point> getHourGeoDataForMonthYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    String query = generateQueryString(state, true, d, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
+    println("Query: " + query + "\n");
+    
+    HashMap<CDate, Point> dayCount = new HashMap<CDate, Point>();
+    if (msql.connect()) {
+      msql.query(query);
+      while(msql.next()) {
+        String lat = msql.getString(state.toLowerCase()+".latitude");
+        String longitude = msql.getString(state.toLowerCase()+".longitude");
+        
+        if( !lat.equals(".") && !longitude.equals(".")) {
+          Point p = new Point(lat, longitude);
+          CDate c = new CDate(m,
+                              d,
+                              yr,
+                              msql.getInt(state.toLowerCase()+".iacchr"));
+          dayCount.put(c, p);                             
+        }
+      }
+    }
+    return dayCount;
   }
   
   // This helper method is ungodly messy...man, I could use a drink right about now...
