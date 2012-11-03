@@ -45,14 +45,14 @@ class DataBrowser {
     initConversionMaps();
     //loadStateDataIntoCache();
     
-    ArrayList<String> w = new ArrayList<String>(atm.keySet());
+    /*ArrayList<String> w = new ArrayList<String>(atm.keySet());
     ArrayList<String> b = new ArrayList<String>(body.keySet());
     ArrayList<String> a = new ArrayList<String>(arf.keySet());
     ArrayList<String> d = new ArrayList<String>(drugs.keySet());
     
     HashMap<Integer, Integer> blah = getCrashMonthNumbersForYear("illinois", 2001, w, b, a, d, true, true, 12, 69);
     
-    println(blah.size());
+    println(blah.size());*/
   }
   
   public void initConversionMaps() {
@@ -582,7 +582,7 @@ class DataBrowser {
  }
  
  public Crash getCrashWithId(int id) {
-   return dCache.   
+   return dCache.getCrashWithId(id);   
  }
  
  private ArrayList<Integer> getDrugNumbers(ArrayList<String> factors) {
