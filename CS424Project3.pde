@@ -31,11 +31,11 @@ Location locationChicago = new Location(41.9f, -87.6f);
 
 Location locationUSA = new Location(38.962f, -93.928); // Use with zoom level 6
 
+boolean heatMap = true;
+
 void setup() {
   // init databrowser obj
-  // db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
-  // Local DB access for now
-  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -71,7 +71,7 @@ void setup() {
   
   
   //states
-  statesListLeft = 491*scaleFactor+311*scaleFactor;
+  statesListLeft = 842*scaleFactor;
   statesListWidth = 281*scaleFactor;
   statesListHeight = (gPlotY2 - gPlotY1)/8;
   
@@ -80,7 +80,7 @@ void setup() {
   statesListButtonHeight = statesListHeight-4*scaleFactor;
   
   for(int i = 0; i < states.length - 1; i++){
-    statesListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1)/8)*scaleFactor*i;
+    statesListTop[i] = gPlotY1+16*scaleFactor+statesListHeight*i;
     statesListButtonTop[i] = statesListTop[i]+2*scaleFactor;
   }
   statesListTop[states.length - 1] = gPlotY2-45*scaleFactor;
@@ -88,16 +88,16 @@ void setup() {
   
   
   //Accidents
-  accidentsListLeft = 491*scaleFactor+311*scaleFactor;
-  accidentsListWidth = 281*scaleFactor;
-  accidentsListHeight = (gPlotY2 - gPlotY1 - 40*scaleFactor)/5*scaleFactor;
+  accidentsListLeft = statesListLeft;
+  accidentsListWidth = statesListWidth;
+  accidentsListHeight = statesListHeight;
   
   accidentsListButtonLeft = accidentsListLeft + 10*scaleFactor;
   accidentsListButtonWidth = 40*scaleFactor;
   accidentsListButtonHeight = accidentsListHeight-4*scaleFactor;
   
   for(int i = 0; i < accidents.length; i++){
-    accidentsListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1 - 40*scaleFactor)/5)*scaleFactor*i;
+    accidentsListTop[i] = gPlotY1+16*scaleFactor+accidentsListHeight*i;
     accidentsListButtonTop[i] = accidentsListTop[i]+2*scaleFactor;
   }
   
@@ -111,8 +111,8 @@ void setup() {
   
   
   timeSliderLeft = gPlotX1+15*scaleFactor;
-  timeSliderTop = gPlotY2 + 115*scaleFactor;
-  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +72*scaleFactor;
+  timeSliderTop = gPlotY2 + 45*scaleFactor;
+  timeSliderRight = gPlotX2 - 15*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
   timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
   timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
@@ -127,12 +127,20 @@ void setup() {
 
 void draw() {
   
-  background(bgImage);
-  drawGLayout();
   if (mapIsShown){
-    drawHeatMap();
+    if(heatMap){
+      background(bgImage);
+      drawGLayout();
+      drawHeatMap();
+    }else{
+      background(40);
+      drawPlotMap();
+    }
   }
   else{
+    //graph
+    background(bgImage);
+    drawGLayout();
   }
   drawTimeSlider();
 }
@@ -146,7 +154,7 @@ void setMapProvider(int newProviderID){
 }
 
 void mousePressed(){
-  //if(false){
+  if(mapIsShown){
     if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
       if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
         if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
@@ -167,38 +175,38 @@ void mousePressed(){
         statesListMove = true;
       }
     }
-    else if(mouseY >= timeSliderButtonTop && mouseY <= timeSliderButtonBottom){
-      if(mouseX >= timeSliderLowLeft && mouseX <= timeSliderLowRight){
-        mouseXOld = mouseX;
-        timeSliderLowMove = true;
-      }
-      else if(mouseX >= timeSliderHighLeft && mouseX <= timeSliderHighRight){
-        mouseXOld = mouseX;
-        timeSliderHighMove = true;
+  }else{
+    if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop[0] && mouseY <= accidentsListTop[accidents.length - 1] + accidentsListHeight) {
+      if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
+        if(mouseY >= accidentsListButtonTop[0] && mouseY <= accidentsListButtonTop[0] + accidentsListButtonHeight){
+          selectedState = 0;
+        }
+        else if(mouseY >= accidentsListButtonTop[accidents.length-1] && mouseY <= accidentsListButtonTop[accidents.length-1] + accidentsListButtonHeight){
+          selectedState = accidents.length-1;
+        }
+        else{
+          for(int i = 1; i < accidentsListButtonTop.length-1; i++){
+            if(mouseY >= accidentsListButtonTop[i] && mouseY <= accidentsListButtonTop[i] + accidentsListButtonHeight){
+              selectedState = i;
+            }
+          }
+        }
+      }else{
+        accidentsListOldY = mouseY;
+        accidentsListMove = true;
       }
     }
-//  }else if(true){
-//    if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop[0] && mouseY <= accidentsListTop[accidents.length - 1] + accidentsListHeight) {
-//      if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
-//        if(mouseY >= accidentsListButtonTop[0] && mouseY <= accidentsListButtonTop[0] + accidentsListButtonHeight){
-//          selectedState = 0;
-//        }
-//        else if(mouseY >= accidentsListButtonTop[accidents.length-1] && mouseY <= accidentsListButtonTop[accidents.length-1] + accidentsListButtonHeight){
-//          selectedState = accidents.length-1;
-//        }
-//        else{
-//          for(int i = 1; i < accidentsListButtonTop.length-1; i++){
-//            if(mouseY >= accidentsListButtonTop[i] && mouseY <= accidentsListButtonTop[i] + accidentsListButtonHeight){
-//              selectedState = i;
-//            }
-//          }
-//        }
-//      }else{
-//        accidentsListOldY = mouseY;
-//        accidentsListMove = true;
-//      }
-//    }
-//  }
+  }
+  if(mouseY >= timeSliderButtonTop && mouseY <= timeSliderButtonBottom){
+    if(mouseX >= timeSliderLowLeft && mouseX <= timeSliderLowRight){
+      mouseXOld = mouseX;
+      timeSliderLowMove = true;
+    }
+    else if(mouseX >= timeSliderHighLeft && mouseX <= timeSliderHighRight){
+      mouseXOld = mouseX;
+      timeSliderHighMove = true;
+    }
+  }
 }
 
 void mouseReleased(){

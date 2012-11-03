@@ -1,8 +1,4 @@
 import de.bezier.data.sql.*;
-/*
-  Class that interacts with DB to get data based on the methods in the class
-  TODO: CACHING BRO
-*/
 
 class DataBrowser {
   private MySQL msql;
@@ -11,11 +7,6 @@ class DataBrowser {
   private String database;
   private String server;
   
-  private String currentState;
-  private int currentYear;
-  
-  //Data cache
-  private DataCache dCache;  
   // Hashmaps to convert from num to string
   private HashMap<String, Integer> atm;
   //HashMap<Stri> cf;
@@ -23,48 +14,25 @@ class DataBrowser {
   private HashMap<String, ArrayList<Integer>> drugs;
   private HashMap<String, ArrayList<Integer>> arf;
   
-  public DataBrowser(PApplet p, String username, String password, String db, String s) {
-    user = username;
-    pass = password;
-    database = db;
-    server = s;
-    
-    dCache = new DataCache();
-    currentState = "illinois";
-    currentYear = 2001;
-    
-    try{
-      println("Connecting to " + database+":"+server);
-      msql = new MySQL(p, server, database, user, pass);
-      println("Connected!");
-    }
-    catch(Exception e) {
-      println(e);  
-    }
-  
-    initConversionMaps();
-    //loadStateDataIntoCache();
-    
-    /*ArrayList<String> w = new ArrayList<String>(atm.keySet());
-    ArrayList<String> b = new ArrayList<String>(body.keySet());
-    ArrayList<String> a = new ArrayList<String>(arf.keySet());
-    ArrayList<String> d = new ArrayList<String>(drugs.keySet());
-    
-    HashMap<Integer, Integer> blah = getCrashMonthNumbersForYear("illinois", 2001, w, b, a, d, true, true, 12, 69);
-    
-    println(blah.size());*/
-  }
-  
   public void initConversionMaps() {
     // Atmospheric conditions data
     atm = new HashMap<String, Integer>();
     atm.put("Blank", -1); atm.put("No Adverse Atmospheric Conditions", 1); atm.put("Rain", 2); atm.put("Sleet (Hail)", 3); atm.put("Snow", 4); atm.put("Fog", 5); atm.put("Rain And Fog", 6); atm.put("Sleet And Fog", 7); atm.put("Other(Smog, Smoke, Blowing Sand Or Dust)", 8); atm.put("Unknown", 9);
     //Crash factors
     //cf = new HashMap<Integer, String>();
-    //cf.put("Blank", -1); cf.put("None", 0); cf.put("Inadequate Warning Of Exits, Lanes Narrowing, Traffic Controls, Etc.", 1); cf.put("Shoulder Design Or Condition", 2); cf.put("Other Construction-Created Condition", 3); cf.put("No Or Obscured Pavement Marking", 4); cf.put("Surface Under Water", 5); cf.put("Inadequate Construction Or Poor Design Of Roadway,Bridge, Etc.", 6); cf.put(7,"Surface Washed Out(caved-in, Road Slippage)"); cf.put(14,"Motor Vehicle In Transport Struck By Falling Cargo,or Something That Came Loose From Or Something That Was Set In Motion By A Vehicle"); cf.put(15,"Non-occupant Struck By Falling Cargo, Or Something That Came Loose From, Or Something That Was Set In Motion By A Vehicle"); cf.put(16,"Non-occupant Struck Vehicle"); cf.put(17,"Vehicle Set-in-motion By Non-driver"); cf.put(18, "CDate Of Accident And CDate Of EMS Notification Were Not The Same Day"); cf.put(19,"Recent/Previous Accident Scene Nearby"); cf.put(20, "Police Pursuit Involved"); cf.put(21,"Within Designated School Zone"); cf.put(22,"Speed Limit Is A Statutory Limit As Recorded Or Was Determined As This State's basic rule"); cf.put(99,"Unknown");
+    //cf.put("Blank", -1); cf.put("None", 0); cf.put("Inadequate Warning Of Exits, Lanes Narrowing, Traffic Controls, Etc.", 1); cf.put("Shoulder Design Or Condition", 2); cf.put("Other Construction-Created Condition", 3); cf.put("No Or Obscured Pavement Marking", 4); cf.put("Surface Under Water", 5); cf.put("Inadequate Construction Or Poor Design Of Roadway,Bridge, Etc.", 6); cf.put(7,"Surface Washed Out(caved-in, Road Slippage)"); cf.put(14,"Motor Vehicle In Transport Struck By Falling Cargo,or Something That Came Loose From Or Something That Was Set In Motion By A Vehicle"); cf.put(15,"Non-occupant Struck By Falling Cargo, Or Something That Came Loose From, Or Something That Was Set In Motion By A Vehicle"); cf.put(16,"Non-occupant Struck Vehicle"); cf.put(17,"Vehicle Set-in-motion By Non-driver"); cf.put(18, "Date Of Accident And Date Of EMS Notification Were Not The Same Day"); cf.put(19,"Recent/Previous Accident Scene Nearby"); cf.put(20, "Police Pursuit Involved"); cf.put(21,"Within Designated School Zone"); cf.put(22,"Speed Limit Is A Statutory Limit As Recorded Or Was Determined As This State's basic rule"); cf.put(99,"Unknown");
     initializeBodyHashMap();
     initializeDrugsHashMap();
     initializeARFHashMap();
+    
+    ArrayList<String> w = new ArrayList<String>(atm.keySet());
+    ArrayList<String> b = new ArrayList<String>(body.keySet());
+    ArrayList<String> a = new ArrayList<String>(arf.keySet());
+    ArrayList<String> d = new ArrayList<String>(drugs.keySet());
+    
+    String blah = generateQueryString("illinois", false, -1, -1, 2003, w, b, a, d, true, true, 12, 69);
+    println(blah);
+    
   }
   
   private void initializeBodyHashMap() {
@@ -176,31 +144,25 @@ class DataBrowser {
     
   } 
   
-  private void loadStateDataIntoCache(){
-    String query = "select crashid, iacchr, iaccday, iaccmon, crashyear, ibody, idrugres1, iatmcond, iarf1, isex, iage, ialcres, latitude, longitude from "+currentState+" where crashyear="+currentYear;
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        int cid = msql.getInt(currentState.toLowerCase()+".crashid");
-        boolean isM = true;
-        boolean isDrunk = false;
-        
-        if(msql.getInt(currentState.toLowerCase()+".isex") == 2) isM = false;
-        if(msql.getInt(currentState.toLowerCase()+".isex") > 8) isDrunk = true;
-        
-        Point p = new Point(msql.getString(currentState.toLowerCase()+".latitude"), msql.getString(currentState.toLowerCase()+".longitude"));
-        CDate d = new CDate(msql.getInt(currentState.toLowerCase()+".iaccmon"), msql.getInt(currentState.toLowerCase()+".iaccday"), msql.getInt(currentState.toLowerCase()+".crashyear"), msql.getInt(currentState.toLowerCase()+".iacchr"));
-        Crash c = new Crash(cid, msql.getInt(currentState.toLowerCase()+".iarf1"), msql.getInt(currentState.toLowerCase()+".idrugres1"), msql.getInt(currentState.toLowerCase()+".ibody"), msql.getInt(currentState.toLowerCase()+".iatmcond"), msql.getInt(currentState.toLowerCase()+".iage"), isM, currentState, isDrunk, d, p); 
-        dCache.addToCache(cid, c);
-      }
+  public DataBrowser(PApplet p, String username, String password, String db, String s) {
+    user = username;
+    pass = password;
+    database = db;
+    server = s;
+    
+    try{
+      msql = new MySQL(p, server, database, user, pass);
     }
+    catch(Exception e) {
+      println(e);  
+    }
+  
+    initConversionMaps();
   }
   
   // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
-    state = state.replace(' ', '_');    
     String query = generateQueryString(state, false, -1, -1, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
     
     HashMap<Integer, Integer> monthCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
@@ -219,10 +181,8 @@ class DataBrowser {
   }
   
   public HashMap<Integer, Integer> getCrashDayNumbersForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
-    state = state.replace(' ', '_');
     String query = generateQueryString(state, false, -1, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-
+    
     HashMap<Integer, Integer> dayCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
       msql.query(query);
@@ -241,10 +201,8 @@ class DataBrowser {
   
   // TODO
   public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
-    state = state.replace(' ', '_');
     String query = generateQueryString(state, false, d, m, yr, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-
+    
     HashMap<Integer, Integer> hourCount = new HashMap<Integer, Integer>();
     if (msql.connect()) {
       msql.query(query);
@@ -261,90 +219,24 @@ class DataBrowser {
     return hourCount;
   } 
   
-  // Gets you all of the crash points and CDate for each crash for that entire year with the factos passed in
-  public HashMap<Integer, Crash> getMonthGeoDataForYear_new(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, -1, -1, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);    
-    println("Query: " + query + "\n");
-
-    HashMap<Integer, Crash> monthCount = new HashMap<Integer, Crash>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-          int cid = msql.getInt(state.toLowerCase()+".crashid");
-          boolean isM = true;
-          boolean isDrunk = false;
-        
-          if(msql.getInt(state.toLowerCase()+".isex") == 2) isM = false;
-          if(msql.getInt(state.toLowerCase()+".isex") > 8) isDrunk = true;
-        
-          Point p = new Point(msql.getString(state.toLowerCase()+".latitude"), msql.getString(state.toLowerCase()+".longitude"));
-          CDate d = new CDate(msql.getInt(state.toLowerCase()+".iaccmon"), msql.getInt(state.toLowerCase()+".iaccday"), msql.getInt(state.toLowerCase()+".crashyear"), msql.getInt(state.toLowerCase()+".iacchr"));
-          Crash c = new Crash(cid, msql.getInt(state.toLowerCase()+".iarf1"), msql.getInt(state.toLowerCase()+".idrugres1"), msql.getInt(state.toLowerCase()+".ibody"), msql.getInt(state.toLowerCase()+".iatmcond"), msql.getInt(state.toLowerCase()+".iage"), isM, state, isDrunk, d, p); 
-          dCache.addToCache(cid, c);
-          monthCount.put(cid, c);                
-        }        
-      }
-    return monthCount;
-  }
-  
-  // TODO - Gets you all of the crash points and CDate for each crash for that entire month for the year with the factos passed in
-  public HashMap<Integer, Crash> getDayGeoDataForMonthYear_new(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, -1, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-    
-    HashMap<Integer, Crash> dayCount = new HashMap<Integer, Crash>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        int cid = msql.getInt(state.toLowerCase()+".crashid");
-          boolean isM = true;
-          boolean isDrunk = false;
-        
-          if(msql.getInt(state.toLowerCase()+".isex") == 2) isM = false;
-          if(msql.getInt(state.toLowerCase()+".isex") > 8) isDrunk = true;
-        
-          Point p = new Point(msql.getString(state.toLowerCase()+".latitude"), msql.getString(state.toLowerCase()+".longitude"));
-          CDate d = new CDate(msql.getInt(state.toLowerCase()+".iaccmon"), msql.getInt(state.toLowerCase()+".iaccday"), msql.getInt(state.toLowerCase()+".crashyear"), msql.getInt(state.toLowerCase()+".iacchr"));
-          Crash c = new Crash(cid, msql.getInt(state.toLowerCase()+".iarf1"), msql.getInt(state.toLowerCase()+".idrugres1"), msql.getInt(state.toLowerCase()+".ibody"), msql.getInt(state.toLowerCase()+".iatmcond"), msql.getInt(state.toLowerCase()+".iage"), isM, state, isDrunk, d, p); 
-          dCache.addToCache(cid, c);
-          dayCount.put(cid, c);                                           
-        }
-      }
-    return dayCount;
+  // TODO
+  public HashMap<Date, Point> getMonthGeoDataForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    return null;
   }
   
   // TODO
-  public HashMap<Integer, Crash> getHourGeoDataForMonthYear_new(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, d, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-    
-    HashMap<Integer, Crash> dayCount = new HashMap<Integer, Crash>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        int cid = msql.getInt(state.toLowerCase()+".crashid");
-          boolean isM = true;
-          boolean isDrunk = false;
-        
-          if(msql.getInt(state.toLowerCase()+".isex") == 2) isM = false;
-          if(msql.getInt(state.toLowerCase()+".isex") > 8) isDrunk = true;
-        
-          Point p = new Point(msql.getString(state.toLowerCase()+".latitude"), msql.getString(state.toLowerCase()+".longitude"));
-          CDate cd = new CDate(msql.getInt(state.toLowerCase()+".iaccmon"), msql.getInt(state.toLowerCase()+".iaccday"), msql.getInt(state.toLowerCase()+".crashyear"), msql.getInt(state.toLowerCase()+".iacchr"));
-          Crash c = new Crash(cid, msql.getInt(state.toLowerCase()+".iarf1"), msql.getInt(state.toLowerCase()+".idrugres1"), msql.getInt(state.toLowerCase()+".ibody"), msql.getInt(state.toLowerCase()+".iatmcond"), msql.getInt(state.toLowerCase()+".iage"), isM, state, isDrunk, cd, p); 
-          dCache.addToCache(cid, c);
-          dayCount.put(cid, c);                                   
-        }
-      }
-    return dayCount;
+  public HashMap<Date, Point> getDayGeoDataForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    return null;
   }
   
-  // This helper method is ungodly messy...man, I could use a drink right about now...
+  // TODO
+  public HashMap<Date, Point> getHourGeoDataForMonthYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arf, ArrayList<String> drugs, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    return null;
+  }
+  
+  // This helper method is ungodly messy...man, I could use a drink right about now...(I'll buy you one)
   private String generateQueryString(String state, boolean wantGeoData, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    String query = "select crashid, iacchr, iaccday, iaccmon, crashyear, ibody, idrugres1, iatmcond, iarf1, isex, iage, ialcres";
+    String query = "select crashid, iacchr, iaccday, iaccmon, crashyear";
     
     query += (wantGeoData)?(", latitude, longitude from "+state.toLowerCase()+" where "):" from "+state.toLowerCase()+" where";
               
@@ -458,148 +350,4 @@ class DataBrowser {
     return query;
   }
   
-  // Gets you all of the crash points and CDate for each crash for that entire year with the factos passed in
-  public HashMap<CDate, Point> getMonthGeoDataForYear(String state, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, -1, -1, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);    
-    println("Query: " + query + "\n");
-
-    HashMap<CDate, Point> monthCount = new HashMap<CDate, Point>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        String lat = msql.getString(state.toLowerCase()+".latitude");
-        String longitude = msql.getString(state.toLowerCase()+".longitude");
-        
-        if( !lat.equals(".") && !longitude.equals(".")) {
-          Point p = new Point(lat, longitude);
-          CDate d = new CDate(msql.getInt(state.toLowerCase()+".iaccmon"),
-                            -1,
-                            yr,
-                            -1);
-          monthCount.put(d, p);                
-        }        
-      }
-    }
-    return monthCount;
-  }
-  
-  // TODO - Gets you all of the crash points and CDate for each crash for that entire month for the year with the factos passed in
-  public HashMap<CDate, Point> getDayGeoDataForMonthYear(String state, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, -1, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-    
-    HashMap<CDate, Point> dayCount = new HashMap<CDate, Point>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        String lat = msql.getString(state.toLowerCase()+".latitude");
-        String longitude = msql.getString(state.toLowerCase()+".longitude");
-        
-        if( !lat.equals(".") && !longitude.equals(".")) {
-          Point p = new Point(lat, longitude);
-          CDate d = new CDate(m,
-                              msql.getInt(state.toLowerCase()+".iaccday"),
-                              yr,
-                              -1);
-          dayCount.put(d, p);                             
-        }
-      }
-    }
-    return dayCount;
-  }
-  
-  // TODO
-  public HashMap<CDate, Point> getHourGeoDataForMonthYear(String state, int d, int m, int yr, ArrayList<String> weather, ArrayList<String> bodyTypes, ArrayList<String> arfArr, ArrayList<String> drugsArr, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
-    state = state.replace(' ', '_');
-    String query = generateQueryString(state, true, d, m, yr, weather, bodyTypes, arfArr, drugsArr, includeMale, includeFemale, startAge, endAge);
-    println("Query: " + query + "\n");
-    
-    HashMap<CDate, Point> dayCount = new HashMap<CDate, Point>();
-    if (msql.connect()) {
-      msql.query(query);
-      while(msql.next()) {
-        String lat = msql.getString(state.toLowerCase()+".latitude");
-        String longitude = msql.getString(state.toLowerCase()+".longitude");
-        
-        if( !lat.equals(".") && !longitude.equals(".")) {
-          Point p = new Point(lat, longitude);
-          CDate c = new CDate(m,
-                              d,
-                              yr,
-                              msql.getInt(state.toLowerCase()+".iacchr"));
-          dayCount.put(c, p);                             
-        }
-      }
-    }
-    return dayCount;
-  }
- 
- private ArrayList<Integer> getAtmNumbers(ArrayList<String> factors) {
-   ArrayList<Integer> nums = new ArrayList<Integer>();
-   //1: atm, 2 body, 3: arf, 4:drugs
-    for (String atmCond : atm.keySet()) {
-        for(int j = 0; j < factors.size(); j++) {
-          if(factors.get(j).toLowerCase().contains(atmCond.toLowerCase())) {
-            nums.add(atm.get(atmCond));
-          }
-        }
-    }
-  return nums;
- }
- 
- private ArrayList<Integer> getBodyNumbers(ArrayList<String> factors) {
-   ArrayList<Integer> nums = new ArrayList<Integer>();
-   //1: atm, 2 body, 3: arf, 4:drugs
-   for (String bName : body.keySet()) {
-        for(int j = 0; j < factors.size(); j++) {
-          if(factors.get(j).toLowerCase().contains(bName.toLowerCase())) {
-              ArrayList<Integer> tmp = body.get(bName);
-              for(int i = 0; i < tmp.size(); i++) {
-                nums.add(tmp.get(i)); 
-              }
-          }
-        }
-   }
-  return nums;
- }
- 
- private ArrayList<Integer> getArfNumbers(ArrayList<String> factors) {
-  ArrayList<Integer> nums = new ArrayList<Integer>();
-   //1: atm, 2 body, 3: arf, 4:drugs
-   for (String aName : arf.keySet()) {
-        for(int j = 0; j < factors.size(); j++) {
-          if(factors.get(j).toLowerCase().contains(aName.toLowerCase())) {
-              ArrayList<Integer> tmp = arf.get(aName);
-              for(int i = 0; i < tmp.size(); i++) {
-                nums.add(tmp.get(i)); 
-              }
-          }
-        }
-   }
-  return nums;    
- }
- 
- public Crash getCrashWithId(int id) {
-   return dCache.getCrashWithId(id);   
- }
- 
- private ArrayList<Integer> getDrugNumbers(ArrayList<String> factors) {
-  ArrayList<Integer> nums = new ArrayList<Integer>();
-   //1: atm, 2 body, 3: arf, 4:drugs
-   for (String dName : drugs.keySet()) {
-        for(int j = 0; j < factors.size(); j++) {
-          if(factors.get(j).toLowerCase().contains(dName.toLowerCase())) {
-              ArrayList<Integer> tmp = drugs.get(dName);
-              for(int i = 0; i < tmp.size(); i++) {
-                nums.add(tmp.get(i)); 
-              }
-          }
-        }
-   }
-  return nums; 
-   
- }
- 
 }
