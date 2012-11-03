@@ -59,7 +59,7 @@ class DataBrowser {
   public void initConversionMaps() {
     // Atmospheric conditions data
     atm = new HashMap<String, Integer>();
-    atm.put("Blank", -1); atm.put("Good Conditions", 1); atm.put("Rain", 2); atm.put("Sleet (Hail)", 3); atm.put("Snow", 4); atm.put("Fog", 5); atm.put("Rain And Fog", 6); atm.put("Sleet And Fog", 7); atm.put("Other(Smog, Smoke, Blowing Sand Or Dust)", 8); atm.put("Unknown", 9);
+    atm.put("Blank", -1); atm.put("Good Conditions", 1); atm.put("Rain", 2); atm.put("Sleet", 3); atm.put("Snow", 4); atm.put("Fog", 5); atm.put("Rain with Fog", 6); atm.put("Sleet With Fog", 7); atm.put("Other", 8); atm.put("Unknown", 9);
     //Crash factors
     //cf = new HashMap<Integer, String>();
     //cf.put("Blank", -1); cf.put("None", 0); cf.put("Inadequate Warning Of Exits, Lanes Narrowing, Traffic Controls, Etc.", 1); cf.put("Shoulder Design Or Condition", 2); cf.put("Other Construction-Created Condition", 3); cf.put("No Or Obscured Pavement Marking", 4); cf.put("Surface Under Water", 5); cf.put("Inadequate Construction Or Poor Design Of Roadway,Bridge, Etc.", 6); cf.put(7,"Surface Washed Out(caved-in, Road Slippage)"); cf.put(14,"Motor Vehicle In Transport Struck By Falling Cargo,or Something That Came Loose From Or Something That Was Set In Motion By A Vehicle"); cf.put(15,"Non-occupant Struck By Falling Cargo, Or Something That Came Loose From, Or Something That Was Set In Motion By A Vehicle"); cf.put(16,"Non-occupant Struck Vehicle"); cf.put(17,"Vehicle Set-in-motion By Non-driver"); cf.put(18, "CDate Of Accident And CDate Of EMS Notification Were Not The Same Day"); cf.put(19,"Recent/Previous Accident Scene Nearby"); cf.put(20, "Police Pursuit Involved"); cf.put(21,"Within Designated School Zone"); cf.put(22,"Speed Limit Is A Statutory Limit As Recorded Or Was Determined As This State's basic rule"); cf.put(99,"Unknown");
@@ -79,7 +79,7 @@ class DataBrowser {
     
     ArrayList<Integer> pCars = new ArrayList<Integer>();
     pCars.add(1); pCars.add(2); pCars.add(3); pCars.add(4); pCars.add(5); pCars.add(6); pCars.add(7); pCars.add(8);
-    body.put("Passenger Cars", pCars);
+    body.put("Cars", pCars);
     
     ArrayList<Integer> pSuv = new ArrayList<Integer>();
     pSuv.add(14); pSuv.add(15); pSuv.add(16); pSuv.add(19);
@@ -87,15 +87,15 @@ class DataBrowser {
     
     ArrayList<Integer> pMinivan = new ArrayList<Integer>();
     pMinivan.add(20);
-    body.put("Minivan", pMinivan);
+    body.put("Minivans", pMinivan);
    
     ArrayList<Integer> pPickuptruck = new ArrayList<Integer>();
     pPickuptruck.add(30); pPickuptruck.add(31); pPickuptruck.add(32); pPickuptruck.add(33); pPickuptruck.add(39);  
-    body.put("Pickup Truck", pPickuptruck);
+    body.put("Pickup Trucks", pPickuptruck);
    
     ArrayList<Integer> pSemitruck = new ArrayList<Integer>();
     pSemitruck.add(65); pSemitruck.add(66);    
-    body.put("Semi-Truck", pSemitruck);
+    body.put("Semi-Trucks", pSemitruck);
     
     ArrayList<Integer> pDeliveryvan = new ArrayList<Integer>();
     pDeliveryvan.add(21); pDeliveryvan.add(22); pDeliveryvan.add(28);    
@@ -111,15 +111,15 @@ class DataBrowser {
     
     ArrayList<Integer> pLargenroad = new ArrayList<Integer>();
     pLargenroad.add(92); pLargenroad.add(93);  
-    body.put("Large non-road vehicles", pLargenroad);
+    body.put("Large n/r Vehicles", pLargenroad);
   
     ArrayList<Integer> pMediumnroad = new ArrayList<Integer>(); 
     pMediumnroad.add(90); pMediumnroad.add(97); pMediumnroad.add(99);
-    body.put("Medium non-road vehicles", pMediumnroad);
+    body.put("Mid-Size n/r Vehicles", pMediumnroad);
     
     ArrayList<Integer> pSmallnroad = new ArrayList<Integer>();
     pSmallnroad.add(97); pSmallnroad.add(83); 
-    body.put("Small non-road vehicles", pSmallnroad);
+    body.put("Small n/r Vehicles", pSmallnroad);
   }
 
   private void initializeDrugsHashMap() {
@@ -127,7 +127,7 @@ class DataBrowser {
     
     ArrayList<Integer> pNodrugsNottested = new ArrayList<Integer>();
     pNodrugsNottested.add(0); pNodrugsNottested.add(1); pNodrugsNottested.add(-1); 
-    drugs.put("No Drugs/Not Tested", pNodrugsNottested);
+    drugs.put("No Drugs\n/Not Tested", pNodrugsNottested);
     
     ArrayList<Integer> pOpiates = new ArrayList<Integer>();
     pOpiates.add(407); pOpiates.add(128); pOpiates.add(177); pOpiates.add(187);
@@ -151,7 +151,7 @@ class DataBrowser {
     
     ArrayList<Integer> pSleep = new ArrayList<Integer>();
     pSleep.add(304); pSleep.add(189);
-    drugs.put("Sleeping Drugs", pSleep);
+    drugs.put("Sleepy", pSleep);
   }
 
   private void initializeARFHashMap() {
@@ -170,7 +170,7 @@ class DataBrowser {
    arf.put("Steering", pSteering);
    
    ArrayList<Integer> pEngine = new ArrayList<Integer>();
-   pEngine.add(6); 
+   pEngine.add(5); 
    arf.put("Engine", pEngine);
    
    ArrayList<Integer> pLights = new ArrayList<Integer>();
@@ -181,6 +181,9 @@ class DataBrowser {
    pSeatbelt.add(1); pSeatbelt.add(2); pSeatbelt.add(3); pSeatbelt.add(4); pSeatbelt.add(5); pSeatbelt.add(6);
    arf.put("Seatbelts", pSeatbelt);
     
+   ArrayList<Integer> pUnknown = new ArrayList<Integer>();
+   pUnknown.add(99); pUnknown.add(-1); pUnknown.add(0); pUnknown.add(6); pUnknown.add(10); pUnknown.add(11); pUnknown.add(12); pUnknown.add(13); pUnknown.add(14); pUnknown.add(15); pUnknown.add(16); pUnknown.add(17); pUnknown.add(18); pUnknown.add(19);
+   arf.put("Other Factor", pUnknown);
   } 
   
   private void loadStateDataIntoCache(){

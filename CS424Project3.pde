@@ -26,6 +26,13 @@ ArrayList<String> currentBodyTypes;
 ArrayList<String> currentWeatherConds;
 ArrayList<String> currentSurfaceConds;
 ArrayList<String> currentARF;
+boolean showMale;
+boolean showFemale;
+int startAge;
+int endAge;
+String currentState;
+// Bool to make sure we don't go to the Data frequently
+boolean hasLatestData;
 
 ControlP5 cp5;
 

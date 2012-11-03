@@ -311,9 +311,14 @@ public void controlEvent(ControlEvent theEvent) {
     if (theEvent.isFrom(vehiclesRoad)) {
 
       vehiclesRoadArr = vehiclesRoad.getArrayValue();
-
       for (int i = 0; i < vehiclesRoadArr.length; i++) {
         println("vehiclesRoadArr[" + i + "] = " + vehiclesRoadArr[i]);
+        if(vehiclesRoadArr[i] == 1) {
+          println(vehiclesRoad.getItem(i).getLabel());
+          if(!currentBodyTypes.contains(vehiclesRoad.getItem(i).getLabel())) {
+            currentBodyTypes.add(vehiclesRoad.getItem(i).getLabel());
+          }
+        }
       }
     }
 
@@ -323,24 +328,38 @@ public void controlEvent(ControlEvent theEvent) {
 
       for (int i = 0; i < vehiclesNonRoadArr.length; i++) {
         println("vehiclesNonRoadArr[" + i + "] = " + vehiclesNonRoadArr[i]);
+        if(vehiclesRoadArr[i] == 1) {
+          println(vehiclesNonRoad.getItem(i).getLabel());
+          if(!currentBodyTypes.contains(vehiclesNonRoad.getItem(i).getLabel())) {
+            currentBodyTypes.add(vehiclesNonRoad.getItem(i).getLabel());
+          }
+        }
       }
     }
 
     if (theEvent.isFrom(weather)) {
 
       weatherArr = weather.getArrayValue();
-
       for (int i = 0; i < weatherArr.length; i++) {
         println("weatherArr[" + i + "] = " + weatherArr[i]);
+        if(weatherArr[i] == 1) {
+          println(weather.getItem(i).getLabel());
+          if(!currentWeatherConds.contains(weather.getItem(i).getLabel())) {
+            currentBodyTypes.add(weather.getItem(i).getLabel());
+          }
+        }
       }
     }
     
         if (theEvent.isFrom(accidentAutomobile)) {
 
       accidentAutomobileArr = accidentAutomobile.getArrayValue();
-
       for (int i = 0; i < accidentAutomobileArr.length; i++) {
         println("accidentAutomobileArr[" + i + "] = " + accidentAutomobileArr[i]);
+        println(accidentAutomobile.getItem(i).getLabel());
+        if(!currentARF.contains(accidentAutomobile.getItem(i).getLabel())) {
+          currentARF.add(accidentAutomobile.getItem(i).getLabel());
+        }
       }
     }
     
@@ -350,6 +369,10 @@ public void controlEvent(ControlEvent theEvent) {
 
       for (int i = 0; i < accidentSurfaceArr.length; i++) {
         println("accidentSurfaceArr[" + i + "] = " + accidentSurfaceArr[i]);
+        println(accidentSurface.getItem(i).getLabel());
+        if(!currentSurfaceConds.contains(accidentSurface.getItem(i).getLabel())) {
+          currentSurfaceConds.add(accidentSurface.getItem(i).getLabel());
+        }
       }
     }
     
@@ -359,6 +382,10 @@ public void controlEvent(ControlEvent theEvent) {
 
       for (int i = 0; i < intoxicantsArr.length; i++) {
         println("intoxicantsArr[" + i + "] = " + intoxicantsArr[i]);
+        println(intoxicants.getItem(i).getLabel());
+        if(!currentIntoxicants.contains(intoxicants.getItem(i).getLabel())) {
+          currentIntoxicants.add(intoxicants.getItem(i).getLabel());  
+        }
       }
     }
     
