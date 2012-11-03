@@ -23,6 +23,7 @@ class Point {
 
 class Crash {
   int cArf;
+  int cSurfaceConds;
   int cDrugs;
   int cId;
   int cBody;
@@ -35,9 +36,10 @@ class Crash {
   CDate crashDate;
   Point coordinates;
   
-  public Crash(int id, int arf, int drugs, int body, int weather, int age, boolean isM, String state, boolean alc, CDate date, Point coords ){
+  public Crash(int id, int surfCond, int arf, int drugs, int body, int weather, int age, boolean isM, String state, boolean alc, CDate date, Point coords ){
     cId = id;
     cArf = arf;
+    cSurfaceConds = surfCond;
     cDrugs = drugs;
     cBody = body;
     cWeather = weather;
