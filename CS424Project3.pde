@@ -33,7 +33,9 @@ Location locationUSA = new Location(38.962f, -93.928); // Use with zoom level 6
 
 void setup() {
   // init databrowser obj
-  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  // db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  // Local DB access for now
+  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
   
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
