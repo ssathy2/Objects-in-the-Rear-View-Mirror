@@ -49,10 +49,10 @@ void setup() {
   
   gPlotX1 = scaleFactor * 100;
   gPlotY1 = scaleFactor * 70;
-  gPlotX2 = displayWidth - 300*scaleFactor;
-  gPlotY2 = displayHeight - 140*scaleFactor;
-//  gPlotX2 = displayWidth - 190*scaleFactor;
-//  gPlotY2 = displayHeight - 70*scaleFactor;
+//  gPlotX2 = displayWidth - 300*scaleFactor;
+//  gPlotY2 = displayHeight - 140*scaleFactor;
+  gPlotX2 = displayWidth - 190*scaleFactor;
+  gPlotY2 = displayHeight - 70*scaleFactor;
   
   //Holds True or False for radiobuttons in filter.
   driverAgeArr = new float[7];
@@ -71,17 +71,17 @@ void setup() {
   //states
   statesListLeft = 491*scaleFactor+311*scaleFactor;
   statesListWidth = 281*scaleFactor;
-  statesListHeight = (gPlotY2 - gPlotY1 - 40*scaleFactor)/5*scaleFactor;
+  statesListHeight = (gPlotY2 - gPlotY1)/8;
   
   statesListButtonLeft = statesListLeft + 10*scaleFactor;
   statesListButtonWidth = 40*scaleFactor;
   statesListButtonHeight = statesListHeight-4*scaleFactor;
   
   for(int i = 0; i < states.length - 1; i++){
-    statesListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1 - 40*scaleFactor)/5)*scaleFactor*i;
+    statesListTop[i] = gPlotY1+16*scaleFactor+((gPlotY2 - gPlotY1)/8)*scaleFactor*i;
     statesListButtonTop[i] = statesListTop[i]+2*scaleFactor;
   }
-  statesListTop[states.length - 1] = gPlotY2+30*scaleFactor;
+  statesListTop[states.length - 1] = gPlotY2-45*scaleFactor;
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
   
   

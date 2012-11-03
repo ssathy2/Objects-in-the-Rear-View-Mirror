@@ -47,7 +47,7 @@ float[] accidentsListTop = new float[states.length];
 float[] accidentsListButtonTop = new float[states.length];
 
 void drawHeatMap() {
-  rectMode(CORNER);
+  rectMode(CORNERS);
   if (statesListMove){
     statesListMovement = mouseY - statesListOldY;
     statesListOldY = mouseY;
@@ -78,11 +78,11 @@ void drawHeatMap() {
     else{
       fill(heat_red(statesValue[i]), heat_green(statesValue[i]), heat_blue(statesValue[i]));
     }
-    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2);
-    if(statesListTop[i] <= gPlotY2 + 30 && statesListTop[i] >= gPlotY1 + 16*scaleFactor){
-      rect(statesListLeft, statesListTop[i], statesListWidth, statesListHeight);
+    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2 - gPlotY1);
+    if(statesListTop[i] <= gPlotY2 - 45*scaleFactor && statesListTop[i] >= gPlotY1 + 16*scaleFactor){
+      rect(statesListLeft, statesListTop[i], statesListLeft + statesListWidth, statesListTop[i] + statesListHeight);
       fill(240);
-      rect(statesListButtonLeft, statesListButtonTop[i], statesListButtonWidth, statesListButtonHeight);
+      rect(statesListButtonLeft, statesListButtonTop[i], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[i] + statesListButtonHeight);
       fill(40);
       textAlign(LEFT);
       text("View", statesListButtonLeft+6*scaleFactor, statesListTop[i] + 2*statesListHeight/3);
@@ -102,10 +102,10 @@ void drawHeatMap() {
     else{
       fill(heat_red(statesValue[0]), heat_green(statesValue[0]), heat_blue(statesValue[0]));
     }
-    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2);
-    rect(statesListLeft, statesListTop[0], statesListWidth, statesListHeight);
+    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2-gPlotY1);
+    rect(statesListLeft, statesListTop[0], statesListLeft + statesListWidth, statesListTop[0] + statesListHeight);
     fill(240);
-    rect(statesListButtonLeft, statesListButtonTop[0], statesListButtonWidth, statesListButtonHeight);
+    rect(statesListButtonLeft, statesListButtonTop[0], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[0] + statesListButtonHeight);
     fill(40);
     textAlign(LEFT);
     text("View", statesListButtonLeft+6*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
@@ -122,10 +122,10 @@ void drawHeatMap() {
     else{
       fill(heat_red(statesValue[states.length-1]), heat_green(statesValue[states.length-1]), heat_blue(statesValue[states.length-1]));
     }
-    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2);
-    rect(statesListLeft, statesListTop[states.length-1], statesListWidth, statesListHeight);
+    shape(state, gPlotX1, gPlotY1, gPlotX1 + 281 * scaleFactor, gPlotY2 - gPlotY1);
+    rect(statesListLeft, statesListTop[states.length-1], statesListLeft + statesListWidth, statesListTop[states.length-1] + statesListHeight);
     fill(240);
-    rect(statesListButtonLeft, statesListButtonTop[states.length-1], statesListButtonWidth, statesListButtonHeight);
+    rect(statesListButtonLeft, statesListButtonTop[states.length-1], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[states.length-1] + statesListButtonHeight);
     fill(40);
     textAlign(LEFT);
     text("View", statesListButtonLeft+6*scaleFactor, statesListTop[states.length-1] + 2*statesListHeight/3);
