@@ -20,6 +20,13 @@ float[] weatherArr;
 float[] accidentAutomobileArr, accidentSurfaceArr;
 float[] intoxicantsArr;
 
+// Keep track of which filters are currently selected...used for getting the appropriate data from DB
+ArrayList<String> currentIntoxicants;
+ArrayList<String> currentBodyTypes;
+ArrayList<String> currentWeatherConds;
+ArrayList<String> currentSurfaceConds;
+ArrayList<String> currentARF;
+
 ControlP5 cp5;
 
 
@@ -33,9 +40,9 @@ Location locationUSA = new Location(38.962f, -93.928); // Use with zoom level 6
 
 void setup() {
   // init databrowser obj
-  // db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
   
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -106,9 +113,7 @@ void setup() {
   String[] subdomains = new String[] { "otile1", "otile2", "otile3", "otile4" }; // optional
   map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100, height/2, 10, 10);
   setMapProvider(0);
-  map.setCenterZoom(locationUSA, 3);
-  
-  
+  map.setCenterZoom(locationUSA, 3); 
   
   timeSliderLeft = gPlotX1+15*scaleFactor;
   timeSliderTop = gPlotY2 + 115*scaleFactor;
@@ -121,6 +126,11 @@ void setup() {
   timeSliderHighLeft = timeSliderRight;
   timeSliderHighRight = timeSliderRight+15*scaleFactor;
 
+  currentIntoxicants = new ArrayList<String>();
+  currentBodyTypes = new ArrayList<String>();
+  currentWeatherConds = new ArrayList<String>();
+  currentSurfaceConds = new ArrayList<String>();
+  currentARF = new ArrayList<String>();
 
   drawLayoutMain();
 }
@@ -133,6 +143,7 @@ void draw() {
     drawHeatMap();
   }
   else{
+    drawGraph();
   }
   drawTimeSlider();
 }
