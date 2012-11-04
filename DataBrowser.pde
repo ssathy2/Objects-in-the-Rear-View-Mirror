@@ -208,6 +208,7 @@ class DataBrowser {
   
   // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
+    // the states with spaces in between them have underscores in the DB
     state = state.replace(' ', '_');    
     String query = generateQueryString(state, false, -1, -1, yr, roadConditions, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");

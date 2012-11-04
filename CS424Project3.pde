@@ -19,6 +19,14 @@ float[] vehiclesRoadArr, vehiclesNonRoadArr;
 float[] weatherArr;
 float[] accidentAutomobileArr, accidentSurfaceArr;
 float[] intoxicantsArr;
+//float[][] arrayOfFilterArrays;
+
+boolean[] chosenMainFilterArr;
+
+//boolean mainFilterChosen;
+int numberOfFiltersChosen;
+
+int currentFiltersCount;
 
 // Keep track of which filters are currently selected...used for getting the appropriate data from DB
 ArrayList<String> currentIntoxicants;
@@ -26,6 +34,9 @@ ArrayList<String> currentBodyTypes;
 ArrayList<String> currentWeatherConds;
 ArrayList<String> currentSurfaceConds;
 ArrayList<String> currentARF;
+String[] currentMainFilterValues;
+String[] currentSubFilterValues;
+
 boolean showMale;
 boolean showFemale;
 int currentYear;
@@ -39,6 +50,10 @@ String currentState;
 boolean shouldGetNewData;
 // what time frame we're looking at..1: month, 2: day: 3: hour..used for plotting and getting data
 int timeScale;
+
+
+
+
 ControlP5 cp5;
 
 
@@ -55,29 +70,37 @@ boolean heatMap = true;
 void setup() {
   // init databrowser obj
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
-  
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
-  
+
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
   displayHeight = WALLHEIGHT / 6 * scaleFactor;
 
   size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
-  
+
+
   cp5 = new ControlP5(this);
-  
+
+
+  smooth();
+
+  helvetica = createFont("Helvetica-Bold", 14);
+  textFont(helvetica);
+
   bgImage = loadImage("bg.jpg");
   bgImage.resize(displayWidth * scaleFactor, displayHeight * scaleFactor);
   background(bgImage);
-  
+
   gPlotX1 = scaleFactor * 100;
   gPlotY1 = scaleFactor * 70;
-//  gPlotX2 = displayWidth - 300*scaleFactor;
-//  gPlotY2 = displayHeight - 140*scaleFactor;
+  //  gPlotX2 = displayWidth - 300*scaleFactor;
+  //  gPlotY2 = displayHeight - 140*scaleFactor;
   gPlotX2 = displayWidth - 190*scaleFactor;
   gPlotY2 = displayHeight - 70*scaleFactor;
-  
+
+  chosenMainFilterArr = new boolean[8];       //Holds at most one true element, this element indicates the main filter.
+
   //Holds True or False for radiobuttons in filter.
   driverAgeArr = new float[7];
   driverGenderArr = new float[2];
@@ -86,12 +109,11 @@ void setup() {
   weatherArr = new float[9];
   accidentAutomobileArr = new float[7];
   accidentSurfaceArr = new float[5];
-  intoxicantsArr = new float[8];
-  
+  intoxicantsArr = new float[10]; 
+
   svg = loadShape("united_states.svg");
   svg.disableStyle();
-  
-  
+
   //states
   statesListLeft = 842*scaleFactor;
   statesListWidth = 281*scaleFactor;
@@ -117,22 +139,38 @@ void setup() {
   accidentsListButtonLeft = accidentsListLeft + 10*scaleFactor;
   accidentsListButtonWidth = 40*scaleFactor;
   accidentsListButtonHeight = accidentsListHeight-4*scaleFactor;
-  
+
   for(int i = 0; i < accidents.length; i++){
     accidentsListTop[i] = gPlotY1+16*scaleFactor+accidentsListHeight*i;
     accidentsListButtonTop[i] = accidentsListTop[i]+2*scaleFactor;
   }
-  
+
+
+
+  //Filter mechanic values
+  mainFilterChosen = false;
+  numberOfFiltersChosen = 0;
+  subFilterValueChosen = false;
+
+  currentFiltersCount = 0;
+
+  currentMainFilterValues = new String[MAXNUMBEROFMAINFILTERS];
+  currentSubFilterValues = new String[MAXNUMBEROFSUBFILTERS];
+
+  generateMainFilterColors();
+
   //Plotting Graph
   String template = "http://{S}.mqcdn.com/tiles/1.0.0/osm/{Z}/{X}/{Y}.png";
-  String[] subdomains = new String[] { "otile1", "otile2", "otile3", "otile4" }; // optional
+  String[] subdomains = new String[] { 
+    "otile1", "otile2", "otile3", "otile4"
+  }; // optional
   map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100, height/2, 10, 10);
   setMapProvider(0);
   map.setCenterZoom(locationUSA, 3); 
-  
+
   timeSliderLeft = gPlotX1+15*scaleFactor;
-  timeSliderTop = gPlotY2 + 45*scaleFactor;
-  timeSliderRight = gPlotX2 - 15*scaleFactor;
+  timeSliderTop = gPlotY2 + 115*scaleFactor;
+  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +72*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
   timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
   timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
@@ -146,7 +184,8 @@ void setup() {
   currentWeatherConds = new ArrayList<String>();
   currentSurfaceConds = new ArrayList<String>();
   currentARF = new ArrayList<String>();
-  shouldGetNewData = true;
+  
+   shouldGetNewData = true;
   showMale = true;
   showFemale = true;
   startAge = 0;
@@ -157,27 +196,37 @@ void setup() {
   currentDay = 1;
   currentMonth = 1;
   currentHour = 1;
+
+  generateValues(); // Call to test method to draw lines on the line graph... not needed
+
   drawLayoutMain();
 }
 
 void draw() {
+  drawTimeSlider();
+
+  checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
   
-  if (mapIsShown){
+    if (mapIsShown){
+      drawMainFilterLegend();
     if(heatMap){
       background(bgImage);
       drawGLayout();
       drawHeatMap();
     }else{
+      
       background(40);
       drawPlotMap();
     }
   }
   else{
+    drawMainFilterLegend();
     background(bgImage);
     drawGLayout();
-    drawGraph();
+    drawLineGraph();
+    if(subFilterValueChosen)
+    drawSubFilterLegend();
   }
-  drawTimeSlider();
 }
 
 void setMapProvider(int newProviderID){
