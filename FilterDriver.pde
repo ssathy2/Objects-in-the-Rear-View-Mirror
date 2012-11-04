@@ -71,7 +71,7 @@ void drawDriverFilterControllers() {
               .setVisible(false)
                 ;
 
- driverGender = cp5.addCheckBox("driverGender")
+  driverGender = cp5.addCheckBox("driverGender")
     .setPosition(10, 10)
       .setSize(30, 30)
         .setSpacingColumn(90)
@@ -85,6 +85,6 @@ void drawDriverFilterControllers() {
                       .setGroup(g1Second2)
                         ;
 
-  
+
 }
 
