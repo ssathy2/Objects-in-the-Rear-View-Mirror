@@ -191,15 +191,12 @@ void drawHeatMap() {
 
 void drawPlotMap(){
   strokeWeight(0);
-  rectMode(CORNER);
+  rectMode(CORNERS);
   map.draw();
   Point2f p = map.locationPoint(locationChicago);
   fill(#FA8A11);
-  rect(p.x, p.y, 10, 10, 5);
+  rect(p.x, p.y, p.x + 10*scaleFactor, p.y+10*scaleFactor, 5*scaleFactor);
   
-  
-  
-  rectMode(CORNER);
   if (accidentsListMove){
     accidentsListMovement = mouseY - accidentsListOldY;
     accidentsListOldY = mouseY;
@@ -229,10 +226,10 @@ void drawPlotMap(){
     }else{
       fill(40);
     }
-    if(accidentsListTop[i] <= gPlotY2 + 30 && accidentsListTop[i] >= gPlotY1 + 16*scaleFactor){
-      rect(accidentsListLeft, accidentsListTop[i], accidentsListWidth, accidentsListHeight);
+    if(accidentsListTop[i] <= gPlotY2 - 15*scaleFactor && accidentsListTop[i] >= gPlotY1 - 14*scaleFactor){
+      rect(accidentsListLeft, accidentsListTop[i], accidentsListLeft + accidentsListWidth, accidentsListTop[i] + accidentsListHeight);
       fill(240);
-      rect(accidentsListButtonLeft, accidentsListButtonTop[i], accidentsListButtonWidth, accidentsListButtonHeight);
+      rect(accidentsListButtonLeft, accidentsListButtonTop[i], accidentsListButtonLeft + accidentsListButtonWidth, accidentsListButtonTop[i] + accidentsListButtonHeight);
       fill(40);
       textAlign(LEFT);
       text("View", accidentsListButtonLeft+6*scaleFactor, accidentsListTop[i] + 2*accidentsListHeight/3);
@@ -246,8 +243,8 @@ void drawPlotMap(){
   
   
   //Pull back into list bounds
-  if (accidents.length > 7 && accidentsListTop[accidents.length-1] < gPlotY1+16*scaleFactor + accidentsListHeight*7){
-    float temp = gPlotY1+16*scaleFactor + accidentsListHeight*7 - accidentsListTop[accidents.length - 1];
+  if (accidents.length > 7 && accidentsListTop[accidents.length-1] < gPlotY1+16*scaleFactor + accidentsListHeight*6){
+    float temp = gPlotY1+16*scaleFactor + accidentsListHeight*6 - accidentsListTop[accidents.length - 1];
     for(int i = 0; i < accidents.length; i++){
       if (temp < 2){
         accidentsListTop[i]+=temp; 
@@ -257,19 +254,21 @@ void drawPlotMap(){
       }
     }
   }
-  if (accidentsListTop[0] > gPlotY1+16*scaleFactor){
-    float temp = accidentsListTop[0] - gPlotY1+16*scaleFactor;
-    System.out.println(temp);
+  if (accidentsListTop[0] > gPlotY1 + 16*scaleFactor){
+    float temp = accidentsListTop[0] - gPlotY1 - 16*scaleFactor;
     for(int i = 0; i < accidents.length; i++){
       if (temp < 2){
         accidentsListTop[i]-=temp; 
       }
       else{
         accidentsListTop[i] -= temp*friction;
-      
       }
     }
   }
+  
+  fill(40);
+  rect(accidentsListLeft, gPlotY1-14*scaleFactor, accidentsListLeft + accidentsListWidth, gPlotY1 + 16*scaleFactor);
+  rect(accidentsListLeft, gPlotY2-15*scaleFactor, accidentsListLeft + accidentsListWidth, gPlotY2 +15*scaleFactor);
 }
 
 float heat_red(int a){
