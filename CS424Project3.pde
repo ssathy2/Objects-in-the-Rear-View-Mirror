@@ -28,12 +28,17 @@ ArrayList<String> currentSurfaceConds;
 ArrayList<String> currentARF;
 boolean showMale;
 boolean showFemale;
+int currentYear;
+int currentMonth;
+int currentDay;
+int currentHour;
 int startAge;
 int endAge;
 String currentState;
 // Bool to make sure we don't go to the Data frequently
-boolean hasLatestData;
-
+boolean shouldGetNewData;
+// what time frame we're looking at..1: month, 2: day: 3: hour..used for plotting and getting data
+int timeScale;
 ControlP5 cp5;
 
 
@@ -47,9 +52,9 @@ Location locationUSA = new Location(38.962f, -93.928); // Use with zoom level 6
 
 void setup() {
   // init databrowser obj
-  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  //db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-  //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
   
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -138,7 +143,17 @@ void setup() {
   currentWeatherConds = new ArrayList<String>();
   currentSurfaceConds = new ArrayList<String>();
   currentARF = new ArrayList<String>();
-
+  shouldGetNewData = true;
+  showMale = true;
+  showFemale = true;
+  startAge = 0;
+  endAge = Integer.MAX_VALUE;
+  currentState = "illinois";
+  timeScale = 1;
+  currentYear = 2001;
+  currentDay = 1;
+  currentMonth = 1;
+  currentHour = 1;
   drawLayoutMain();
 }
 

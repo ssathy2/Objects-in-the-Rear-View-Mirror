@@ -209,7 +209,7 @@ class DataBrowser {
   // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     state = state.replace(' ', '_');    
-    String query = generateQueryString(state, false, -1, -1, yr, weather, roadConditions, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    String query = generateQueryString(state, false, -1, -1, yr, roadConditions, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
     
     HashMap<Integer, Integer> monthCount = new HashMap<Integer, Integer>();
@@ -230,7 +230,7 @@ class DataBrowser {
   
   public HashMap<Integer, Integer> getCrashDayNumbersForMonthYear(String state, int m, int yr, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     state = state.replace(' ', '_');
-    String query = generateQueryString(state, false, -1, m, yr, weather, roadConditions, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    String query = generateQueryString(state, false, -1, m, yr, roadConditions, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
 
     HashMap<Integer, Integer> dayCount = new HashMap<Integer, Integer>();
@@ -252,7 +252,7 @@ class DataBrowser {
   // TODO
   public HashMap<Integer, Integer> getCrashHourNumbersForMonthDayYear(String state, int d, int m, int yr, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     state = state.replace(' ', '_');
-    String query = generateQueryString(state, false, d, m, yr, weather, bodyTypesParam, roadConditions, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    String query = generateQueryString(state, false, d, m, yr, roadConditions, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
     println("Query: " + query + "\n");
 
     HashMap<Integer, Integer> hourCount = new HashMap<Integer, Integer>();
@@ -373,56 +373,61 @@ class DataBrowser {
     // tack on roadConditions
     if(!roadConditions.isEmpty()) {
       query += " and isurfcond in (";
-      
-      for (String rName : surfCond.keySet()) {
-        for(int j = 0; j < roadConditions.size(); j++) {
-          if(roadConditions.get(j).toLowerCase().contains(rName.toLowerCase())) {
-            if( j != (roadConditions.size() - 1)) {
-              query += surfCond.get(rName) + ",";
+      int numAdd = 0;
+      for(int j = 0; j < roadConditions.size(); j++) {
+        for (String rName : surfCond.keySet()) {
+          if(roadConditions.get(j).toLowerCase().equals(rName.toLowerCase())) {
+            if( numAdd == 0) {
+              query += surfCond.get(rName);
+              numAdd++; 
             }
-            else {
-              query += surfCond.get(rName) + ")"; 
+            else{
+              query += "," + surfCond.get(rName); 
             }
           }
         } 
-      }  
+      }
+      query += ")";   
     }  
       
     // tack on the weather conditions
     if(!weather.isEmpty()) {
       query += " and iatmcond in (";
-      
-      for (String atmCond : atm.keySet()) {
+      int numAdd = 0; 
         for(int j = 0; j < weather.size(); j++) {
-          if(atmCond.toLowerCase().contains(weather.get(j).toLowerCase())) {
-            if( j != (weather.size() - 1)) {
-              query += atm.get(atmCond) + ",";
+          for (String atmCond : atm.keySet()) {
+          if(weather.get(j).toLowerCase().equals(atmCond.toLowerCase())) {  
+            if( numAdd == 0) {
+              query += atm.get(atmCond);
+              numAdd++; 
             }
-            else {
-              query += atm.get(atmCond) + ")"; 
+            else{
+              query += "," + atm.get(atmCond); 
             }
           }
         } 
-      }  
+      }
+      query += ")"; 
     }
     
     if(!bodyTypes.isEmpty()) {
-      query += " and ibody in (";     
+      query += " and ibody in (";
+      int t = 0;
       for (String bodyName : body.keySet()) {
         for(int j = 0; j < bodyTypes.size(); j++) {
-          if(bodyName.toLowerCase().contains(bodyTypes.get(j).toLowerCase())) {
+          if(bodyTypes.get(j).toLowerCase().equals(bodyName.toLowerCase())) {
               ArrayList<Integer> tmp = body.get(bodyName);
+              println(bodyName);
               String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(j == 0 && i == 0){
-                  query += tmp.get(i);  
+                if(t == 0 && i == 0){
+                  query += tmp.get(i);
+                  t++; 
                 }
                 else {
-                  p += " " + tmp.get(i);                 
+                  query += "," + tmp.get(i);            
                 }
               }
-              p = p.replace(' ', ',');
-              query += p;
             }
           }
         }
@@ -431,21 +436,21 @@ class DataBrowser {
     
     if(!arfArr.isEmpty()) {
       query += " and iarf1 in (";     
+      int t=0;
       for (String arfName : arf.keySet()) {
         for(int j = 0; j < arfArr.size(); j++) {
-          if(arfName.toLowerCase().contains(arfArr.get(j).toLowerCase())) {
+          if(arfName.toLowerCase().equals(arfArr.get(j).toLowerCase())) {
               ArrayList<Integer> tmp = arf.get(arfName);
               String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(j == 0 && i == 0){
-                  query += tmp.get(i);  
+                if(t == 0 && i == 0){
+                  query += tmp.get(i);
+                  t++; 
                 }
                 else {
-                  p += " " + tmp.get(i);                 
+                  query += "," + tmp.get(i);            
                 }
               }
-              p = p.replace(' ', ',');
-              query += p;
             }
           }
         }
@@ -454,21 +459,21 @@ class DataBrowser {
      
      if(!drugsArr.isEmpty()) {
       query += " and idrugres1 in (";     
+      int t=0;
       for (String drugName : drugs.keySet()) {
         for(int j = 0; j < drugsArr.size(); j++) {
-          if(drugName.toLowerCase().contains(drugsArr.get(j).toLowerCase())) {
+          if(drugName.toLowerCase().equals(drugsArr.get(j).toLowerCase())) {
               ArrayList<Integer> tmp = drugs.get(drugName);
               String p = "";
               for(int i = 0 ; i < tmp.size(); i++) {
-                if(j == 0 && i == 0){
-                  query += tmp.get(i);  
+                if(t == 0 && i == 0){
+                  query += tmp.get(i);
+                  t++; 
                 }
                 else {
-                  p += " " + tmp.get(i);                 
+                  query += "," + tmp.get(i);            
                 }
               }
-              p = p.replace(' ', ',');
-              query += p;
             }
           }
         }
@@ -477,10 +482,10 @@ class DataBrowser {
          query += " and ialcres between 8 and 94";
        } 
       }
-      
-      if(includeMale && !includeFemale) query += " and isex=1";
-      else if(!includeMale && includeFemale) query += " and isex=2";
-      
+      if(!includeMale || !includeFemale) {
+        if(includeMale) query += " and isex=1";
+        else if(includeFemale) query += " and isex=2";
+      }
       query += " and iage between " + startAge + " and " + endAge;
     
     return query;

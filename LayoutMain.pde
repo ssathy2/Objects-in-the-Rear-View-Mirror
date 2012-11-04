@@ -144,6 +144,7 @@ void drawGraphSwitchButtons() {
 // Code to retrieve a controller's group:  theEvent.getController().getParent().getName();
 
 public void controlEvent(ControlEvent theEvent) {
+
   if (theEvent.isController()) {
     if (theEvent.getController().getParent().getName() == "graphSwitchGroup") {    //Control events for the map/graph switch buttons
 
@@ -194,13 +195,12 @@ public void controlEvent(ControlEvent theEvent) {
 
         break;
         case(4):// Time Vars
-
         if (!cp5.getGroup("g4").isVisible()) 
           resetFilterGroups();
 
         resetSubFilterGroups();
         cp5.getGroup("g4").setVisible(!cp5.getGroup("g4").isVisible());
-
+        
         break;
         case(5): //Accident Vars
 
@@ -231,7 +231,7 @@ public void controlEvent(ControlEvent theEvent) {
 
       switch(theEvent.getController().getId()) {
         case(1):
-
+        
         if ( !cp5.getGroup("g1Second1").isVisible())
           resetSubFilterGroups();
 
@@ -285,6 +285,13 @@ public void controlEvent(ControlEvent theEvent) {
         break;
       }
     }
+    if (cp5.getGroup("g4").isVisible() && theEvent.getController().getParent().getName() == "g4") {
+      // set timescale for what we're displaying on the graph/map
+      if(theEvent.getLabel().equals("Year Range")) {timeScale = 1; shouldGetNewData = true;}
+      else if(theEvent.getLabel().equals("Months of a Year")) {timeScale = 2; shouldGetNewData = true;}
+      else if(theEvent.getLabel().equals("Weekday Averages")) {timeScale = 3; shouldGetNewData = true;}
+      else if(theEvent.getLabel().equals("Time of Day Averages")) {timeScale = 4; shouldGetNewData = true;}
+    }
   }
 
   if (theEvent.isGroup())
@@ -302,9 +309,15 @@ public void controlEvent(ControlEvent theEvent) {
     if (theEvent.isFrom(driverGender)) {
 
       driverGenderArr = driverGender.getArrayValue();
+      showMale = showFemale = false;
 
       for (int i = 0; i < driverGenderArr.length; i++) {
         println("driverGenderArr[" + i + "] = " + driverGenderArr[i]);
+        shouldGetNewData = true;
+        if(driverGenderArr[i] == 1) {
+          if(i == 0) showMale = true;
+          else if(i == 1) showFemale = true;  
+        }
       }
     }
 
@@ -316,8 +329,16 @@ public void controlEvent(ControlEvent theEvent) {
         if(vehiclesRoadArr[i] == 1) {
           println(vehiclesRoad.getItem(i).getLabel());
           if(!currentBodyTypes.contains(vehiclesRoad.getItem(i).getLabel())) {
+            shouldGetNewData = true;
             currentBodyTypes.add(vehiclesRoad.getItem(i).getLabel());
           }
+        }
+        else {
+          println(vehiclesRoad.getItem(i).getLabel());
+          if(currentBodyTypes.contains(vehiclesRoad.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentBodyTypes.remove(vehiclesRoad.getItem(i).getLabel());
+          }        
         }
       }
     }
@@ -328,13 +349,22 @@ public void controlEvent(ControlEvent theEvent) {
 
       for (int i = 0; i < vehiclesNonRoadArr.length; i++) {
         println("vehiclesNonRoadArr[" + i + "] = " + vehiclesNonRoadArr[i]);
-        if(vehiclesRoadArr[i] == 1) {
+        if(vehiclesNonRoadArr[i] == 1) {
           println(vehiclesNonRoad.getItem(i).getLabel());
           if(!currentBodyTypes.contains(vehiclesNonRoad.getItem(i).getLabel())) {
+            shouldGetNewData = true;
             currentBodyTypes.add(vehiclesNonRoad.getItem(i).getLabel());
-          }
+          } 
+        }
+        else {
+          println(vehiclesNonRoad.getItem(i).getLabel());
+          if(currentBodyTypes.contains(vehiclesNonRoad.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentBodyTypes.remove(vehiclesNonRoad.getItem(i).getLabel());
+          }          
         }
       }
+      println(currentBodyTypes.size());
     }
 
     if (theEvent.isFrom(weather)) {
@@ -345,7 +375,15 @@ public void controlEvent(ControlEvent theEvent) {
         if(weatherArr[i] == 1) {
           println(weather.getItem(i).getLabel());
           if(!currentWeatherConds.contains(weather.getItem(i).getLabel())) {
-            currentBodyTypes.add(weather.getItem(i).getLabel());
+            shouldGetNewData = true;
+            currentWeatherConds.add(weather.getItem(i).getLabel());
+          }
+        } 
+        else {
+          println(weather.getItem(i).getLabel());
+          if(currentWeatherConds.contains(weather.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentWeatherConds.remove(weather.getItem(i).getLabel());
           }
         }
       }
@@ -356,39 +394,67 @@ public void controlEvent(ControlEvent theEvent) {
       accidentAutomobileArr = accidentAutomobile.getArrayValue();
       for (int i = 0; i < accidentAutomobileArr.length; i++) {
         println("accidentAutomobileArr[" + i + "] = " + accidentAutomobileArr[i]);
-        println(accidentAutomobile.getItem(i).getLabel());
-        if(!currentARF.contains(accidentAutomobile.getItem(i).getLabel())) {
-          currentARF.add(accidentAutomobile.getItem(i).getLabel());
+        if(accidentAutomobileArr[i] == 1) {
+          println(accidentAutomobile.getItem(i).getLabel());
+          if(!currentARF.contains(accidentAutomobile.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentARF.add(accidentAutomobile.getItem(i).getLabel());
+          }
+        }
+        else {
+          println(accidentAutomobile.getItem(i).getLabel());
+          if(currentARF.contains(accidentAutomobile.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentARF.remove(accidentAutomobile.getItem(i).getLabel());
+          }          
         }
       }
     }
-    
     if (theEvent.isFrom(accidentSurface)) {
 
       accidentSurfaceArr = accidentSurface.getArrayValue();
 
       for (int i = 0; i < accidentSurfaceArr.length; i++) {
         println("accidentSurfaceArr[" + i + "] = " + accidentSurfaceArr[i]);
-        println(accidentSurface.getItem(i).getLabel());
-        if(!currentSurfaceConds.contains(accidentSurface.getItem(i).getLabel())) {
-          currentSurfaceConds.add(accidentSurface.getItem(i).getLabel());
+        if(accidentSurfaceArr[i] == 1) {
+          println(accidentSurface.getItem(i).getLabel());
+          if(!currentSurfaceConds.contains(accidentSurface.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentSurfaceConds.add(accidentSurface.getItem(i).getLabel());
+          }
+        }
+        else {
+          println(accidentSurface.getItem(i).getLabel());
+          if(currentSurfaceConds.contains(accidentSurface.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentSurfaceConds.remove(accidentSurface.getItem(i).getLabel());
+          }          
         }
       }
     }
     
-            if (theEvent.isFrom(intoxicants)) {
+    if (theEvent.isFrom(intoxicants)) {
 
       intoxicantsArr = intoxicants.getArrayValue();
 
       for (int i = 0; i < intoxicantsArr.length; i++) {
         println("intoxicantsArr[" + i + "] = " + intoxicantsArr[i]);
-        println(intoxicants.getItem(i).getLabel());
-        if(!currentIntoxicants.contains(intoxicants.getItem(i).getLabel())) {
-          currentIntoxicants.add(intoxicants.getItem(i).getLabel());  
-        }
+        if(intoxicantsArr[i] == 1) {
+          println(intoxicants.getItem(i).getLabel());
+          if(!currentIntoxicants.contains(intoxicants.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentIntoxicants.add(intoxicants.getItem(i).getLabel());  
+          }
+        } 
+        else {
+          println(intoxicants.getItem(i).getLabel());
+          if(currentIntoxicants.contains(intoxicants.getItem(i).getLabel())) {
+            shouldGetNewData = true;
+            currentIntoxicants.remove(intoxicants.getItem(i).getLabel());  
+          }       
+        }       
       }
     }
-    
   }
 }
 
