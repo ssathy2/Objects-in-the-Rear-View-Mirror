@@ -206,7 +206,30 @@ class DataBrowser {
     }
   }
   
-  // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data
+  // returns count of crashes for each year
+  public HashMap<Integer, Integer> getCrashNumbersForYearRange(String state, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge) {
+    state = state.replace(' ', '_');
+    String query = generateQueryString(state, false, -1, -1, -1, roadConditions, weather, bodyTypesParam, arfParam, drugsParam, includeMale, includeFemale, startAge, endAge);
+    println("Query: " + query + "\n");
+    
+    HashMap<Integer, Integer> monthCount = new HashMap<Integer, Integer>();
+    if (msql.connect()) {
+      msql.query(query);
+      while(msql.next()) {
+        int month = msql.getInt(state.toLowerCase()+".crashyear");
+        if(!monthCount.containsKey(month)) {
+          monthCount.put(month, 1); 
+        } else {
+          monthCount.put(month, monthCount.get(month) + 1);
+        }        
+      }
+    }
+    
+    return monthCount;
+  }
+  
+  
+  // Gets you a mapping of month crash data to the count for a particular year...TODO: Need to cache data 
   public HashMap<Integer, Integer> getCrashMonthNumbersForYear(String state, int yr, ArrayList<String> roadConditions, ArrayList<String> weather, ArrayList<String> bodyTypesParam, ArrayList<String> arfParam, ArrayList<String> drugsParam, boolean includeMale, boolean includeFemale, int startAge, int endAge)  {
     // the states with spaces in between them have underscores in the DB
     state = state.replace(' ', '_');    
@@ -369,6 +392,9 @@ class DataBrowser {
     if( yr != -1) {
       if( m != -1 || d != -1) query += " and crashyear=" + yr;
       else query += " crashyear=" + yr; 
+    }
+    else {
+      query += " crashyear between 2001 and 2010";  
     }
       
     // tack on roadConditions

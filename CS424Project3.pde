@@ -51,11 +51,7 @@ boolean shouldGetNewData;
 // what time frame we're looking at..1: month, 2: day: 3: hour..used for plotting and getting data
 int timeScale;
 
-
-
-
 ControlP5 cp5;
-
 
 InteractiveMap map;
 
@@ -69,9 +65,9 @@ boolean heatMap = true;
 
 void setup() {
   // init databrowser obj
-  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  //db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-  //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -79,9 +75,7 @@ void setup() {
 
   size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
 
-
   cp5 = new ControlP5(this);
-
 
   smooth();
 
@@ -169,8 +163,8 @@ void setup() {
   map.setCenterZoom(locationUSA, 3); 
 
   timeSliderLeft = gPlotX1+15*scaleFactor;
-  timeSliderTop = gPlotY2 + 115*scaleFactor;
-  timeSliderRight = timeSliderLeft + gPlotX2 - gPlotX1 +72*scaleFactor;
+  timeSliderTop = gPlotY2 + 45*scaleFactor; 
+  timeSliderRight = gPlotX2 - 15*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
   timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
   timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
@@ -185,7 +179,7 @@ void setup() {
   currentSurfaceConds = new ArrayList<String>();
   currentARF = new ArrayList<String>();
   
-   shouldGetNewData = true;
+  shouldGetNewData = true;
   showMale = true;
   showFemale = true;
   startAge = 0;
@@ -197,14 +191,10 @@ void setup() {
   currentMonth = 1;
   currentHour = 1;
 
-  generateValues(); // Call to test method to draw lines on the line graph... not needed
-
   drawLayoutMain();
 }
 
 void draw() {
-  drawTimeSlider();
-
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
   
     if (mapIsShown){
@@ -224,9 +214,9 @@ void draw() {
     background(bgImage);
     drawGLayout();
     drawLineGraph();
-    if(subFilterValueChosen)
-    drawSubFilterLegend();
+    if(subFilterValueChosen) drawSubFilterLegend();
   }
+    drawTimeSlider();
 }
 
 void setMapProvider(int newProviderID){

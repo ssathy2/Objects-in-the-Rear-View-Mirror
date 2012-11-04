@@ -463,7 +463,7 @@ public void controlEvent(ControlEvent theEvent) {
 
       for (int i = 0; i < vehiclesNonRoadArr.length; i++) {
         println("vehiclesNonRoadArr[" + i + "] = " + vehiclesNonRoadArr[i]);
-        if (vehiclesRoadArr[i] == 1) {
+        if (vehiclesNonRoadArr[i] == 1) {
           println(vehiclesNonRoad.getItem(i).getLabel());
           if (!currentBodyTypes.contains(vehiclesNonRoad.getItem(i).getLabel())) {
             shouldGetNewData = true;
@@ -490,7 +490,7 @@ public void controlEvent(ControlEvent theEvent) {
           println(weather.getItem(i).getLabel());
           if (!currentWeatherConds.contains(weather.getItem(i).getLabel())) {
             shouldGetNewData = true;
-            currentBodyTypes.add(weather.getItem(i).getLabel());
+            currentWeatherConds.add(weather.getItem(i).getLabel());
           }
         }
         else {
@@ -621,6 +621,7 @@ void resetFilterGroups() {
 
 
 void drawTimeSlider(){
+  noStroke();
   strokeWeight(0);
   if(timeSliderLowMove && mouseX - mouseXOld < timeSliderHighLeft - timeSliderLowRight && timeSliderLowRight + mouseX - mouseXOld >= timeSliderLeft){
     timeSliderLowLeft += mouseX - mouseXOld;
