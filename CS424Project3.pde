@@ -52,6 +52,9 @@ Location locationUSA = new Location(38.962f, -93.928); // Use with zoom level 6
 
 boolean heatMap = true;
 
+int dateMin = 2001;
+int dateMax = 2010;
+
 void setup() {
   // init databrowser obj
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
@@ -158,6 +161,9 @@ void setup() {
   currentMonth = 1;
   currentHour = 1;
   drawLayoutMain();
+  
+  clearData();
+  updateData();
 }
 
 void draw() {
@@ -185,6 +191,82 @@ void setMapProvider(int newProviderID){
     case 0: map.setMapProvider( new Microsoft.RoadProvider() ); break;
     case 1: map.setMapProvider( new Microsoft.HybridProvider() ); break;
     case 2: map.setMapProvider( new Microsoft.AerialProvider() ); break;
+  }
+}
+
+void clearData(){
+  dataMin = 0;
+  dataMax = 0;
+  for(int i = 0; i < states.length; ++i){
+    statesValue[i] = 0;
+  }
+}
+
+void updateData(){
+  for(int o = 0; o < dateMax - dateMin; o++){
+    for(int i = 0; i < states.length; i++){
+      HashMap<Integer, Integer> tempo = db.getCrashMonthNumbersForYear(statesFull[i], dateMin + o, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100);
+      int total = 0;
+      for(int j = 0; j < tempo.size(); j++){
+        if (tempo.get(j) != null){
+          total += tempo.get(j);
+        }
+      }
+      statesValue[i] += total;
+    }
+  }
+  
+  for(int i = 0; i < states.length-1; i++){
+    for(int j = 0; j < states.length; j++){
+      if (statesValue[i] < statesValue[i + 1]){
+        int temp = statesValue[i+1];
+        statesValue[i+1] = statesValue[i];
+        statesValue[i] = temp;
+        
+        String tempString = statesFull[i+1];
+        statesFull[i+1] = statesFull[i];
+        statesFull[i] = tempString;
+        
+        tempString = states[i+1];
+        states[i+1] = states[i];
+        states[i] = tempString;
+      }
+    }
+  }
+  
+  boolean swap = true;
+  while(swap){
+    swap = false;
+    for(int i = 1; i < states.length; i++){
+      if (statesValue[i-1] < statesValue[i]){
+        int temp = statesValue[i-1];
+        statesValue[i-1] = statesValue[i];
+        statesValue[i] = temp;
+        
+        String tempString = statesFull[i-1];
+        statesFull[i-1] = statesFull[i];
+        statesFull[i] = tempString;
+        
+        tempString = states[i-1];
+        states[i-1] = states[i];
+        states[i] = tempString;
+        swap = true;
+      }
+    }
+  } 
+  
+  for(int i = 0; i < states.length; i++){
+    if(dataMin != 0){
+      if(statesValue[i] < dataMin){
+        dataMin = statesValue[i];
+      }
+    }
+    else{
+      dataMin = statesValue[i];
+    }
+    if (statesValue[i] > dataMax){
+      dataMax = statesValue[i];
+    }
   }
 }
 
