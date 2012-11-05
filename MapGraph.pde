@@ -1,4 +1,6 @@
 /* Class file to draw the map graph itself. */
+float toggleMapLeft, toggleMapTop, toggleMapRight, toggleMapBottom;
+
 float dataMin = 0;
 float dataMax = 0;
 
@@ -12,6 +14,8 @@ String[] states = {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","
 int[] statesValue = {50,49,48,47,46,45,44,43,42,41,40,39,38,37,
 36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,
 14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
+
+HashMap<Integer, HashMap<Integer, Crash>> statePoints = new HashMap<Integer, HashMap<Integer, Crash>>();
 
 HashMap<String, HashMap<Integer, Integer>> statesValues = new HashMap<String, HashMap<Integer, Integer>>();
 
@@ -195,9 +199,18 @@ void drawPlotMap(){
   strokeWeight(0);
   rectMode(CORNERS);
   map.draw();
-  Point2f p = map.locationPoint(locationChicago);
   fill(#FA8A11);
-  rect(p.x, p.y, p.x + 10*scaleFactor, p.y+10*scaleFactor, 5*scaleFactor);
+  for(int i = dateMin; i <= dateMax; i++){
+    Crash[] year_points = statePoints.get(i).values().toArray(new Crash[0]);
+    for(int j = 0; j < year_points.length; j++){
+      Point p = year_points[j].coordinates;
+      Point2f lp = map.locationPoint(new Location((float)p.latitude, (float)p.longitude));
+      rect(lp.x, lp.y, lp.x + 2*scaleFactor, lp.y+2*scaleFactor, (float)1*scaleFactor);
+    }
+  }
+//  Point2f p = map.locationPoint(locationChicago);
+//  fill(#FA8A11);
+//  rect(p.x, p.y, p.x + 10*scaleFactor, p.y+10*scaleFactor, 5*scaleFactor);
   
   if (accidentsListMove){
     accidentsListMovement = mouseY - accidentsListOldY;

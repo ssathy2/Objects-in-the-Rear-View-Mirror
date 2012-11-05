@@ -136,6 +136,10 @@ void setup() {
   statesListTop[states.length - 1] = gPlotY2-45*scaleFactor;
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
   
+  toggleMapLeft = statesListLeft + statesListWidth + 15*scaleFactor;
+  toggleMapTop = statesListTop[0];
+  toggleMapRight = toggleMapLeft + 15*scaleFactor;
+  toggleMapBottom = toggleMapTop + 15*scaleFactor;
   
   //Accidents
   accidentsListLeft = statesListLeft;
@@ -172,7 +176,7 @@ void setup() {
   }; // optional
   map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100, height/2, 10, 10);
   setMapProvider(0);
-  map.setCenterZoom(locationUSA, 3); 
+  map.setCenterZoom(locationUSA, 6); 
 
   timeSliderLeft = gPlotX1+15*scaleFactor;
   timeSliderTop = gPlotY2 + 45*scaleFactor; 
@@ -214,8 +218,8 @@ void draw() {
 //  if(filtersHaveBeenChanged()){
 //    updateData();
 //  }
-    if (mapIsShown){
-      drawMainFilterLegend();
+  if (mapIsShown){
+    drawMainFilterLegend();
     if(heatMap){
       background(bgImage);
       drawGLayout();
@@ -261,9 +265,14 @@ void clearData(){
 
 void updateData(){
   statesValues.clear();
+  statePoints.clear();
   for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100));
+    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
+  for(int i = 2001; i < 2011; i++){
+    statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, i, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+  }
+  
   updateDataNewRange();
 }
 
@@ -318,19 +327,8 @@ void updateDataNewRange(){
     }
   } 
   
-  for(int i = 0; i < states.length; i++){
-    if(dataMin != 0){
-      if(statesValue[i] < dataMin){
-        dataMin = statesValue[i];
-      }
-    }
-    else{
-      dataMin = statesValue[i];
-    }
-    if (statesValue[i] > dataMax){
-      dataMax = statesValue[i];
-    }
-  }
+  dataMin = statesValue[states.length-1];
+  dataMax = statesValue[0];
 }
 
 void mousePressed(){
@@ -354,6 +352,9 @@ void mousePressed(){
         statesListOldY = mouseY;
         statesListMove = true;
       }
+    }
+    else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
+      heatMap = !heatMap;
     }
   }else{
     if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop[0] && mouseY <= accidentsListTop[accidents.length - 1] + accidentsListHeight) {
