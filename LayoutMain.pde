@@ -41,9 +41,9 @@ static String daysofweek [] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Fr
 void drawLayoutMain() {
 
   //Font to use with all ControlP5 controllers
-  pFont = createFont("Calibri Bold", 18, true); // use true/false for smooth/no-smooth
-  toggleFont = createFont("Calibri Bold", 9, true);
-  cp5Font = new ControlFont(pFont, 9);
+  pFont = createFont("Calibri Bold", scaleFactor *18, true); // use true/false for smooth/no-smooth
+  toggleFont = createFont("Calibri Bold", scaleFactor * 9, true);
+  cp5Font = new ControlFont(pFont, scaleFactor *  9);
 
   cp5.setControlFont(toggleFont);
 
@@ -141,7 +141,7 @@ void drawClearFilterValuesButton() {
 
   cp5.addBang("clear")
     .setPosition(gPlotX2 - (scaleFactor * 115), gPlotY2 + (scaleFactor * 4))
-      .setSize(100, 30)
+      .setSize(scaleFactor * 100, scaleFactor * 30)
         .setCaptionLabel("Clear Filters")
           .setTriggerEvent(Bang.PRESSED)
             .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)

@@ -66,10 +66,9 @@ void drawMainFilterLegendText(String[] mainFilterStrings) {  //Ultimately, Calle
                     .setColorValue(mainFilterColorsArr[i])
                     .setFont(createFont("Georgia", 10 * scaleFactor))
                     ;
+                    inc+= scaleFactor * 12;
     }
-    inc+= scaleFactor * 12;
   }
-  
 }
 
 

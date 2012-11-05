@@ -2,8 +2,8 @@ void drawVehicleFilterControllers() {
 
   Group g2 = cp5.addGroup("g2")//VehicleVariables
     .setPosition(firstFilterTabPlotX - (scaleFactor * 275), firstFilterTabPlotY + (scaleFactor * 25))
-      .setBackgroundHeight(210)
-        .setWidth(270)
+      .setBackgroundHeight(scaleFactor *210)
+        .setWidth(scaleFactor *270)
           .hideBar()
             .setBackgroundColor(color(240, 90))
               // .activateEvent(false)
@@ -11,9 +11,9 @@ void drawVehicleFilterControllers() {
                 ;
 
   Group subg21 = cp5.addGroup("subg21")//Automobile related accident Variables
-    .setPosition(5, 5)
-      .setBackgroundHeight(125)
-        .setWidth(260)
+    .setPosition(scaleFactor *5,scaleFactor * 5)
+      .setBackgroundHeight(scaleFactor *125)
+        .setWidth(scaleFactor *260)
           .hideBar()
             .setBackgroundColor(color(240, 90))
               // .activateEvent(false)
@@ -22,9 +22,9 @@ void drawVehicleFilterControllers() {
                   ;
 
   Group subg22 = cp5.addGroup("subg22")//road surface related accidentVariables
-    .setPosition(5, 135)
-      .setBackgroundHeight(70)
-        .setWidth(260)
+    .setPosition(scaleFactor *5,scaleFactor * 135)
+      .setBackgroundHeight(scaleFactor *70)
+        .setWidth(scaleFactor *260)
           .hideBar()
             .setBackgroundColor(color(240, 90))
               // .activateEvent(false)
@@ -33,9 +33,9 @@ void drawVehicleFilterControllers() {
                   ;
 
  vehiclesRoad = cp5.addCheckBox("vehiclesRoad")
-    .setPosition(10, 5)
-      .setSize(28, 28)
-        .setSpacingColumn(90)
+    .setPosition(scaleFactor *10,scaleFactor * 5)
+      .setSize(scaleFactor *28,scaleFactor * 28)
+        .setSpacingColumn(scaleFactor *90)
           .setItemsPerRow(2)
             .setColorForeground(#FFFFFF)
               .setColorActive(0xffff0000)
@@ -53,9 +53,9 @@ void drawVehicleFilterControllers() {
                                       ;
 
   vehiclesNonRoad = cp5.addCheckBox("vehiclesNonRoad")
-    .setPosition(10, 5)
-      .setSize(28, 28)
-        .setSpacingColumn(90)
+    .setPosition(scaleFactor *10,scaleFactor * 5)
+      .setSize(scaleFactor *28,scaleFactor * 28)
+        .setSpacingColumn(scaleFactor *90)
           .setItemsPerRow(2)
             .setColorForeground(#FFFFFF)
               .setColorActive(0xffff0000)

@@ -52,7 +52,7 @@ void drawXAxisUnits() {
   fill(235);
   textFont(toggleFont);
   textAlign(CENTER, TOP);
-  textSize(12);
+  textSize(scaleFactor * 12);
 
   switch(timeScale) {
     case(1):
@@ -137,22 +137,22 @@ void drawStateSelectionController() {
   ssPlotY2 = gPlotY1 + scaleFactor * 30;
 
   ssListBox = cp5.addListBox("stateSelection")
-         .setPosition(ssPlotX1 + scaleFactor * 22, ssPlotY2 - scaleFactor * 2)
-         .setSize(int((ssPlotX2 - ssPlotX1) - scaleFactor * 45 ),int(200))
-         .setItemHeight(scaleFactor* 30)
-         .setBarHeight(scaleFactor*22)
-         //.hideBar()
-         .setColorBackground(color(255,1))
-         .setColorActive(#FC3333)
-         .setColorForeground(#FC3333) 
-         .setColorLabel(20)
-         .setScrollbarWidth(scaleFactor * 20)
-         .actAsPulldownMenu(true)
-         .addItems(statesFull);
-         ;
-         
-  
-  ssListBox.captionLabel().toUpperCase(true);
+    .setPosition(ssPlotX1 + scaleFactor * 22, ssPlotY2 - scaleFactor * 2)
+    .setSize(int((ssPlotX2 - ssPlotX1) - scaleFactor * 45 ), int(scaleFactor * 200))
+    .setItemHeight(scaleFactor* 30)
+    .setBarHeight(scaleFactor*22)
+    //.hideBar()
+  .setColorBackground(color(255, 1))
+    .setColorActive(#FC3333)
+    .setColorForeground(#FC3333) 
+    .setColorLabel(20)
+    .setScrollbarWidth(scaleFactor * 20)
+    .actAsPulldownMenu(true)
+	.addItems(statesFull);
+    ;
+
+
+  ssListBox.captionLabel().setFont(cp5Font);
   ssListBox.captionLabel().setSize(scaleFactor * 15);
   ssListBox.captionLabel().set(statesFull[14]);
   ssListBox.captionLabel().setColor(20);
@@ -164,135 +164,5 @@ void drawStateSelectionController() {
     lbi.setColorBackground(#E8EAE8);
   }
 }
-
-
-/*
-void setupSList(){
- 
- sListTop = new float[states.length];
- sListButtonTop = new float[states.length];
- 
- aListTop = new float[states.length];
- aListButtonTop = new float[states.length];
- 
- //states
- sListLeft = 842*scaleFactor;
- sListWidth = 281*scaleFactor;
- sListHeight = (gPlotY2 - gPlotY1)/8;
- 
- sListButtonLeft = sListLeft + 10*scaleFactor;
- sListButtonWidth = 40*scaleFactor;
- sListButtonHeight = sListHeight-4*scaleFactor;
- 
- for (int i = 0; i < states.length - 1; i++) {
- sListTop[i] = gPlotY1+16*scaleFactor+sListHeight*i;
- sListButtonTop[i] = sListTop[i]+2*scaleFactor;
- }
- 
- sListTop[states.length - 1] = gPlotY2-45*scaleFactor;
- sListButtonTop[states.length - 1] = sListTop[states.length-1] + 2*scaleFactor;
- 
- 
- //Accidents
- aListLeft = sListLeft;
- aListWidth = sListWidth;
- aListHeight = sListHeight;
- 
- aListButtonLeft = aListLeft + 10*scaleFactor;
- aListButtonWidth = 40*scaleFactor;
- aListButtonHeight = aListHeight-4*scaleFactor;
- 
- for (int i = 0; i < accidents.length; i++) {
- aListTop[i] = gPlotY1+16*scaleFactor+aListHeight*i;
- aListButtonTop[i] = aListTop[i]+2*scaleFactor;
- }
- 
- sListTop[states.length - 1] = gPlotY2-45*scaleFactor;
- sListButtonTop[states.length - 1] = sListTop[states.length-1] + 2*scaleFactor;
- }
- 
- 
- 
- void drawStateSelectionController(){
- 
- setupSList();
- 
- //This is the code that controls how it moves.
- // Put this in your drawing method
- if (aListMove){
- aListMovement = mouseY - aListOldY;
- aListOldY = mouseY;
- for (int i = 0; i < accidents.length; i++){
- aListTop[i]+=aListMovement;
- aListButtonTop[i] = aListTop[i] + 2*scaleFactor;
- }
- }
- else {
- if (abs(aListMovement) > 1){
- for (int i = 0; i < accidents.length; i++){
- aListTop[i]+=aListMovement;
- aListButtonTop[i] = aListTop[i] + 2*scaleFactor;
- }
- aListMovement = aListMovement*friction;
- }
- }
- 
- noStroke();
- 
- fill(0);
- textSize(12*scaleFactor);
- for (int i = accidents.length - 1; i >= 0; i--) {
- PShape state = svg.getChild(accidents[i]);
- if(i < 5){
- fill(#FA8A11);
- }else{
- fill(40);
- }
- if(aListTop[i] <= gPlotY2 - 15*scaleFactor && aListTop[i] >= gPlotY1 - 14*scaleFactor){
- rect(aListLeft, aListTop[i], aListLeft + aListWidth, aListTop[i] + aListHeight);
- fill(240);
- rect(aListButtonLeft, aListButtonTop[i], aListButtonLeft + aListButtonWidth, aListButtonTop[i] + aListButtonHeight);
- fill(40);
- textAlign(LEFT);
- text("View", aListButtonLeft+6*scaleFactor, aListTop[i] + 2*aListHeight/3);
- fill(240);
- textAlign(LEFT);
- text(accidentsFull[i], aListLeft+aListButtonWidth+20*scaleFactor, aListTop[i] + 2*aListHeight/3);
- textAlign(RIGHT);
- text(accidentsValue[i], aListLeft+aListWidth - 10*scaleFactor, aListTop[i] + 2*aListHeight/3);
- }
- }
- 
- 
- //Pull back into list bounds
- if (accidents.length > 7 && aListTop[accidents.length-1] < gPlotY1+16*scaleFactor + aListHeight*6){
- float temp = gPlotY1+16*scaleFactor + aListHeight*6 - aListTop[accidents.length - 1];
- for(int i = 0; i < accidents.length; i++){
- if (temp < 2){
- aListTop[i]+=temp; 
- }
- else{
- aListTop[i] += temp*friction;
- }
- }
- }
- if (aListTop[0] > gPlotY1 + 16*scaleFactor){
- float temp = aListTop[0] - gPlotY1 - 16*scaleFactor;
- for(int i = 0; i < accidents.length; i++){
- if (temp < 2){
- aListTop[i]-=temp; 
- }
- else{
- aListTop[i] -= temp*friction;
- }
- }
- }
- 
- }
- 
- */
-
-
-
 
 
