@@ -3,6 +3,7 @@ import com.modestmaps.core.*;
 import com.modestmaps.geo.*;
 import com.modestmaps.providers.*;
 
+
 import controlP5.*;
 
 final static int WALLWIDTH = 8160;
@@ -12,6 +13,8 @@ static int scaleFactor;
 DataBrowser db;
 PImage bgImage;
 PShape svg;
+
+
 
 //Boolean arrays to hold values of radiobuttons
 float[] driverAgeArr, driverGenderArr;
@@ -229,20 +232,23 @@ void draw() {
     if(heatMap){
       background(bgImage);
       drawGLayout();
+      drawMainFilterLegend();
       drawHeatMap();
-    }else{
+    }
+    else {
       background(40);
       drawPlotMap();
     }
   }
-  else{
-    drawMainFilterLegend();
+  else {
     background(bgImage);
     drawGLayout();
     drawLineGraph();
-    if(subFilterValueChosen) drawSubFilterLegend();
+    if (subFilterValueChosen)
+      drawSubFilterLegend();
   }
-    drawTimeSlider();
+  
+drawTimeSlider();
 }
 
 void setMapProvider(int newProviderID){

@@ -16,7 +16,7 @@ void drawDriverFilterControllers() {
       .setPosition(10, 20)
         .setGroup(g1)
           .setId(1)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
 
@@ -25,7 +25,7 @@ void drawDriverFilterControllers() {
       .setPosition(10, 70)
         .setGroup(g1)
           .setId(2)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
 

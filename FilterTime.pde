@@ -15,7 +15,7 @@ void drawTimeFilterControllers() {
       .setPosition(10, 20)
         .setGroup(g4)
           .setId(1)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
 
@@ -24,7 +24,7 @@ void drawTimeFilterControllers() {
       .setPosition(10, 70)
         .setGroup(g4)
           .setId(2)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
   cp5.addBang("Weekday Averages")
@@ -32,7 +32,7 @@ void drawTimeFilterControllers() {
       .setPosition(10, 120)
         .setGroup(g4)
           .setId(2)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
   cp5.addBang("Time of Day Averages")
@@ -40,7 +40,8 @@ void drawTimeFilterControllers() {
       .setPosition(10, 170)
         .setGroup(g4)
           .setId(2)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
+              
 }
 

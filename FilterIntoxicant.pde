@@ -23,7 +23,7 @@ void drawIntoxicantFilterControllers() {
                       .addItem("Alcohol", 1)
                         .addItem("Opiates", 2)
                           .addItem("Marijuana", 3)
-                            .addItem("Painkillers", 4)                   
+                            .addItem("Painkillers", 4)               
                               .addItem("Psychadelics", 5)
                                 .addItem("Amphetamines", 6)
                                   .addItem("Sleepy", 7)
