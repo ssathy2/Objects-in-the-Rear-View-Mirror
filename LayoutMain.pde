@@ -717,7 +717,6 @@ noStroke();
     if(tempDateMin != dateMin || tempDateMax != dateMax){
       dateMin = tempDateMin;
       dateMax = tempDateMax;
-      shouldGetNewData = true;
       updateDataNewRange();
     }
   } else if(timeScale == 2){
@@ -728,7 +727,6 @@ noStroke();
     if(tempDateMin != dateMin || tempDateMax != dateMax){
       dateMin = tempDateMin;
       dateMax = tempDateMax;
-      shouldGetNewData = true;
       updateDataNewRange();
     }   
   } else if(timeScale == 3) {
@@ -739,7 +737,6 @@ noStroke();
     if(tempDateMin != dateMin || tempDateMax != dateMax){
       dateMin = tempDateMin;
       dateMax = tempDateMax;
-      shouldGetNewData = true;
       updateDataNewRange();
     }
   } else if(timeScale == 4) {
@@ -750,7 +747,6 @@ noStroke();
     if(tempDateMin != dateMin || tempDateMax != dateMax){
       dateMin = tempDateMin;
       dateMax = tempDateMax;
-      shouldGetNewData = true;
       updateDataNewRange();
     }
   }
