@@ -68,9 +68,9 @@ int dateMax = 2010;
 
 void setup() {
   // init databrowser obj
-  //db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-    db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  //  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -149,13 +149,11 @@ void setup() {
   accidentsListButtonLeft = accidentsListLeft + 10*scaleFactor;
   accidentsListButtonWidth = 40*scaleFactor;
   accidentsListButtonHeight = accidentsListHeight-4*scaleFactor;
-
-  for(int i = 0; i < accidents.length; i++){
-    accidentsListTop[i] = gPlotY1+16*scaleFactor+accidentsListHeight*i;
-    accidentsListButtonTop[i] = accidentsListTop[i]+2*scaleFactor;
-  }
-
-
+  
+  specificAccidentBackButtonWidth = 40*scaleFactor;
+  specificAccidentBackButtonLeft = accidentsListLeft + accidentsListWidth - specificAccidentBackButtonWidth;
+  specificAccidentBackButtonTop = gPlotY1+16*scaleFactor;
+  specificAccidentBackButtonHeight = accidentsListButtonHeight;
 
   //Filter mechanic values
   mainFilterChosen = false;
@@ -174,7 +172,7 @@ void setup() {
   String[] subdomains = new String[] { 
     "otile1", "otile2", "otile3", "otile4"
   }; // optional
-  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100, height/2, 10, 10);
+  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 10*scaleFactor, 10*scaleFactor);
   setMapProvider(0);
   map.setCenterZoom(locationUSA, 6); 
 
@@ -255,6 +253,29 @@ void setMapProvider(int newProviderID){
 //float[] intoxicantsArr;
 //}
 
+void crashClicked(float xPos , float yPos){
+  //fill accidents with points,
+  accidents.clear();
+  accidentsListTop.clear();
+  accidentsListButtonTop.clear();
+  for(int i = dateMin; i <= dateMax; i++){
+    Crash[] year_points = statePoints.get(i).values().toArray(new Crash[0]);
+    for(int j = 0; j < year_points.length; j++){
+      Point p = year_points[j].coordinates;
+      Point2f lp = map.locationPoint(new Location((float)p.latitude, (float)p.longitude));
+      //System.out.println(sqrt(sq(xPosMap - lp.x) + sq(yPosMap - lp.y)));
+      if(sqrt(sq(xPos - lp.x) + sq(yPos - lp.y)) < 4*scaleFactor){
+        accidents.add(year_points[j]);
+      }
+    }
+  }
+  for(int i = 0; i < accidents.size(); i++){
+    accidentsListTop.add(gPlotY1+16*scaleFactor+accidentsListHeight*i);
+    accidentsListButtonTop.add(accidentsListTop.get(i)+2*scaleFactor);
+  }
+  viewingSpecificAccident = false;
+}
+
 void clearData(){
   dataMin = 0;
   dataMax = 0;
@@ -333,40 +354,62 @@ void updateDataNewRange(){
 
 void mousePressed(){
   if(mapIsShown){
-    if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
-      if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
-        if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
-          selectedState = statesFull[0];
-        }
-        else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
-          selectedState = statesFull[states.length-1];
-        }
-        else{
-          for(int i = 1; i < statesListButtonTop.length-1; i++){
-            if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
-              selectedState = statesFull[i];
+    if(heatMap){
+      if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
+        if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
+          if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
+            selectedState = statesFull[0];
+          }
+          else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
+            selectedState = statesFull[states.length-1];
+          }
+          else{
+            for(int i = 1; i < statesListButtonTop.length-1; i++){
+              if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
+                selectedState = statesFull[i];
+              }
             }
           }
+        }else{
+          statesListOldY = mouseY;
+          statesListMove = true;
         }
-      }else{
-        statesListOldY = mouseY;
-        statesListMove = true;
+      }
+      else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
+        heatMap = !heatMap;
       }
     }
-    else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
-      heatMap = !heatMap;
-    }
-  }else{
-    if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop[0] && mouseY <= accidentsListTop[accidents.length - 1] + accidentsListHeight) {
-      if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
-        for(int i = 0; i < accidentsListButtonTop.length; i++){
-          if(mouseY >= accidentsListButtonTop[i] && mouseY <= accidentsListButtonTop[i] + accidentsListButtonHeight){
-            selectedState = statesFull[i];
+    else{
+      if(viewingSpecificAccident){
+        if(mouseX >= specificAccidentBackButtonLeft && mouseX <= specificAccidentBackButtonLeft + specificAccidentBackButtonWidth && mouseY >= specificAccidentBackButtonTop && mouseY <= specificAccidentBackButtonTop + specificAccidentBackButtonHeight){
+          viewingSpecificAccident = false;
+        }
+        else if(mouseX >= 0){
+          crashClicked(mouseX, mouseY);
+        }
+      }
+      else{
+        if(accidents.size() > 0){
+          if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop.get(0) && mouseY <= accidentsListTop.get(accidents.size() - 1) + accidentsListHeight) {
+            if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
+              for(int i = 0; i < accidentsListButtonTop.size(); i++){
+                if(mouseY >= accidentsListButtonTop.get(i) && mouseY <= accidentsListButtonTop.get(i) + accidentsListButtonHeight){
+                  viewingSpecificAccident = true;
+                  specificAccident = i;
+                }
+              }
+            }else{
+              accidentsListOldY = mouseY;
+              accidentsListMove = true;
+            }
+          }
+          else if(mouseX >= 0){
+            crashClicked(mouseX, mouseY);
           }
         }
-      }else{
-        accidentsListOldY = mouseY;
-        accidentsListMove = true;
+        else if(mouseX >= 0){
+          crashClicked(mouseX, mouseY);
+        }
       }
     }
   }
