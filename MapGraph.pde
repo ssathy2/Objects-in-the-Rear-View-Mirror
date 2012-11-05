@@ -1,4 +1,6 @@
 /* Class file to draw the map graph itself. */
+float toggleMapLeft, toggleMapTop, toggleMapRight, toggleMapBottom;
+
 float dataMin = 0;
 float dataMax = 50;
 
@@ -12,6 +14,8 @@ String[] states = {"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","
 int[] statesValue = {50,49,48,47,46,45,44,43,42,41,40,39,38,37,
 36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,
 14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
+
+HashMap<Integer, HashMap<Integer, Crash>> statePoints = new HashMap<Integer, HashMap<Integer, Crash>>();
 
 HashMap<String, HashMap<Integer, Integer>> statesValues = new HashMap<String, HashMap<Integer, Integer>>();
 
@@ -30,7 +34,7 @@ int[] accidentsValue = {50,49,48,47,46,45,44,43,42,41,40,39,38,37,
 
 String[] statesFull = {"Alaska","Alabama","Arkansas","Arizona","California","Colorado","Connecticut","District of Columbia","Delaware","Florida","Georgia","Hawaii","Iowa","Idaho","Illinois","Indiana","Kansas","Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
-int selectedState = 14;
+String selectedState = "Illinois";
 
 float statesListLeft, statesListWidth, statesListHeight, statesListMovement, statesListOldY, statesListButtonLeft, statesListButtonWidth, statesListButtonHeight;
 float accidentsListLeft, accidentsListWidth, accidentsListHeight, accidentsListMovement, accidentsListOldY, accidentsListButtonLeft, accidentsListButtonWidth, accidentsListButtonHeight;
@@ -72,7 +76,7 @@ void drawHeatMap() {
   textSize(12*scaleFactor);
   for (int i = states.length - 2; i > 0; i--) {
     PShape state = svg.getChild(states[i]);
-    if(i == selectedState){
+    if(statesFull[i] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -96,7 +100,7 @@ void drawHeatMap() {
   
   
     PShape state = svg.getChild(states[0]);
-    if(0 == selectedState){
+    if(statesFull[0] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -116,7 +120,7 @@ void drawHeatMap() {
     text(statesValue[0], statesListLeft+statesListWidth - 10*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
     
     state = svg.getChild(states[states.length-1]);
-    if(states.length-1 == selectedState){
+    if(statesFull[states.length-1] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -162,7 +166,7 @@ void drawHeatMap() {
   textSize(28*scaleFactor);
   fill(40);
   textAlign(CENTER);
-  text(statesFull[selectedState], 511*scaleFactor+257*scaleFactor/2, gPlotY1 + 37*scaleFactor);
+  text(selectedState, 511*scaleFactor+257*scaleFactor/2, gPlotY1 + 37*scaleFactor);
   textSize(18*scaleFactor);
   textAlign(LEFT);
   text("Accidents", 511*scaleFactor, gPlotY1 + 70*scaleFactor);
@@ -193,9 +197,18 @@ void drawPlotMap(){
   strokeWeight(0);
   rectMode(CORNERS);
   map.draw();
-  Point2f p = map.locationPoint(locationChicago);
   fill(#FA8A11);
-  rect(p.x, p.y, p.x + 10*scaleFactor, p.y+10*scaleFactor, 5*scaleFactor);
+  for(int i = dateMin; i <= dateMax; i++){
+    Crash[] year_points = statePoints.get(i).values().toArray(new Crash[0]);
+    for(int j = 0; j < year_points.length; j++){
+      Point p = year_points[j].coordinates;
+      Point2f lp = map.locationPoint(new Location((float)p.latitude, (float)p.longitude));
+      rect(lp.x, lp.y, lp.x + 2*scaleFactor, lp.y+2*scaleFactor, (float)1*scaleFactor);
+    }
+  }
+//  Point2f p = map.locationPoint(locationChicago);
+//  fill(#FA8A11);
+//  rect(p.x, p.y, p.x + 10*scaleFactor, p.y+10*scaleFactor, 5*scaleFactor);
   
   if (accidentsListMove){
     accidentsListMovement = mouseY - accidentsListOldY;

@@ -109,6 +109,15 @@ void setup() {
   accidentAutomobileArr = new float[7];
   accidentSurfaceArr = new float[5];
   intoxicantsArr = new float[10]; 
+  
+//  driverAgeArrLast = new float[7];
+//  driverGenderArrLast = new float[2];
+//  vehiclesRoadArrLast = new float[8];
+//  vehiclesNonRoadArrLast =new float[3];
+//  weatherArrLast = new float[9];
+//  accidentAutomobileArrLast = new float[7];
+//  accidentSurfaceArrLast = new float[5];
+//  intoxicantsArrLast = new float[10]; 
 
   svg = loadShape("united_states.svg");
   svg.disableStyle();
@@ -129,6 +138,10 @@ void setup() {
   statesListTop[states.length - 1] = gPlotY2-45*scaleFactor;
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
   
+  toggleMapLeft = statesListLeft + statesListWidth + 15*scaleFactor;
+  toggleMapTop = statesListTop[0];
+  toggleMapRight = toggleMapLeft + 15*scaleFactor;
+  toggleMapBottom = toggleMapTop + 15*scaleFactor;
   
   //Accidents
   accidentsListLeft = statesListLeft;
@@ -165,7 +178,7 @@ void setup() {
   }; // optional
   map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100, height/2, 10, 10);
   setMapProvider(0);
-  map.setCenterZoom(locationUSA, 3); 
+  map.setCenterZoom(locationUSA, 6); 
 
   timeSliderLeft = gPlotX1+15*scaleFactor;
   timeSliderTop = gPlotY2 + 45*scaleFactor; 
@@ -208,9 +221,11 @@ void setup() {
 
 void draw() {
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
-  
-    if (mapIsShown){
-      drawMainFilterLegend();
+//  if(filtersHaveBeenChanged()){
+//    updateData();
+//  }
+  if (mapIsShown){
+    drawMainFilterLegend();
     if(heatMap){
       background(bgImage);
       drawGLayout();
@@ -238,6 +253,14 @@ void setMapProvider(int newProviderID){
   }
 }
 
+//boolean filtersHaveBeenChanged(){
+//  float[] driverAgeArr, driverGenderArr;
+//float[] vehiclesRoadArr, vehiclesNonRoadArr;
+//float[] weatherArr;
+//float[] accidentAutomobileArr, accidentSurfaceArr;
+//float[] intoxicantsArr;
+//}
+
 void clearData(){
   dataMin = 0;
   dataMax = 0;
@@ -248,9 +271,14 @@ void clearData(){
 
 void updateData(){
   statesValues.clear();
+  statePoints.clear();
   for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100));
+    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
+  for(int i = 2001; i < 2011; i++){
+    statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, i, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+  }
+  
   updateDataNewRange();
 }
 
@@ -305,19 +333,8 @@ void updateDataNewRange(){
     }
   } 
   
-  for(int i = 0; i < states.length; i++){
-    if(dataMin != 0){
-      if(statesValue[i] < dataMin){
-        dataMin = statesValue[i];
-      }
-    }
-    else{
-      dataMin = statesValue[i];
-    }
-    if (statesValue[i] > dataMax){
-      dataMax = statesValue[i];
-    }
-  }
+  dataMin = statesValue[states.length-1];
+  dataMax = statesValue[0];
 }
 
 void mousePressed(){
@@ -325,15 +342,15 @@ void mousePressed(){
     if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
       if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
         if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
-          selectedState = 0;
+          selectedState = statesFull[0];
         }
         else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
-          selectedState = states.length-1;
+          selectedState = statesFull[states.length-1];
         }
         else{
           for(int i = 1; i < statesListButtonTop.length-1; i++){
             if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
-              selectedState = i;
+              selectedState = statesFull[i];
             }
           }
         }
@@ -342,20 +359,15 @@ void mousePressed(){
         statesListMove = true;
       }
     }
+    else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
+      heatMap = !heatMap;
+    }
   }else{
     if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop[0] && mouseY <= accidentsListTop[accidents.length - 1] + accidentsListHeight) {
       if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
-        if(mouseY >= accidentsListButtonTop[0] && mouseY <= accidentsListButtonTop[0] + accidentsListButtonHeight){
-          selectedState = 0;
-        }
-        else if(mouseY >= accidentsListButtonTop[accidents.length-1] && mouseY <= accidentsListButtonTop[accidents.length-1] + accidentsListButtonHeight){
-          selectedState = accidents.length-1;
-        }
-        else{
-          for(int i = 1; i < accidentsListButtonTop.length-1; i++){
-            if(mouseY >= accidentsListButtonTop[i] && mouseY <= accidentsListButtonTop[i] + accidentsListButtonHeight){
-              selectedState = i;
-            }
+        for(int i = 0; i < accidentsListButtonTop.length; i++){
+          if(mouseY >= accidentsListButtonTop[i] && mouseY <= accidentsListButtonTop[i] + accidentsListButtonHeight){
+            selectedState = statesFull[i];
           }
         }
       }else{
