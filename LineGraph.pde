@@ -43,30 +43,8 @@ void drawLineGraph() {
    curveVertex(x, y);
    */
 
-  int startP = 0;
-  int endP = 0;
-  switch(timeScale) {
-  case 1: 
-    startP = 2001; 
-    endP = 2010; 
-    break;
-  case 2: 
-    startP = 1; 
-    endP = 12; 
-    break; 
-  case 3: 
-    startP = 1; 
-    endP = 31; 
-    break;
-  case 4: 
-    startP = 1; 
-    endP = 24; 
-    break;
-  }
-
-
-  for (int i = startP; i <= endP; i++) {
-      x = map(i, startP, endP, gPlotX1, gPlotX2);    
+  for (int i = dateMin; i <= dateMax; i++) {
+      x = map(i, dateMin, dateMax, gPlotX1, gPlotX2);    
     if (plotData.get(i) != null) {
       y = map(plotData.get(i), 0, maxVal, gPlotY2, gPlotY1);
     }

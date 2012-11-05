@@ -459,7 +459,8 @@ public void controlEvent(ControlEvent theEvent) {
     if(theEvent.name().equals("stateSelection")){
       
       int stateIndex = (int)theEvent.group().value();
-      println("State Index: " + ssListBox.getItem(stateIndex).getText());
+      println("New State: " + ssListBox.getItem(stateIndex).getText());
+      currentState = ssListBox.getItem(stateIndex).getText();
       shouldGetNewData = true;
       
     }
@@ -706,16 +707,54 @@ noStroke();
   fill(240);
   textAlign(CENTER);
   textSize(12*scaleFactor);
+  
   //TODO make it work for all date ranges (day, month, year)
-  int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
-  int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
-  text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
-  text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
-  if(tempDateMin != dateMin || tempDateMax != dateMax){
-    dateMin = tempDateMin;
-    dateMax = tempDateMax;
-    updateDataNewRange();
+  if(timeScale == 1){
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
+    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    if(tempDateMin != dateMin || tempDateMax != dateMax){
+      dateMin = tempDateMin;
+      dateMax = tempDateMax;
+      shouldGetNewData = true;
+      updateDataNewRange();
+    }
+  } else if(timeScale == 2){
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
+    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    if(tempDateMin != dateMin || tempDateMax != dateMax){
+      dateMin = tempDateMin;
+      dateMax = tempDateMax;
+      shouldGetNewData = true;
+      updateDataNewRange();
+    }   
+  } else if(timeScale == 3) {
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
+    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    if(tempDateMin != dateMin || tempDateMax != dateMax){
+      dateMin = tempDateMin;
+      dateMax = tempDateMax;
+      shouldGetNewData = true;
+      updateDataNewRange();
+    }
+  } else if(timeScale == 4) {
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
+    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+    if(tempDateMin != dateMin || tempDateMax != dateMax){
+      dateMin = tempDateMin;
+      dateMax = tempDateMax;
+      shouldGetNewData = true;
+      updateDataNewRange();
+    }
   }
+  
 }
 
 
