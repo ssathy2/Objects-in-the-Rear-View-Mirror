@@ -1,3 +1,6 @@
+import hypermedia.net.*;
+import omicronAPI.*;
+
 import com.modestmaps.*;
 import com.modestmaps.core.*;
 import com.modestmaps.geo.*;
@@ -67,6 +70,12 @@ PanButton right = new PanButton(22*scaleFactor,41*scaleFactor,14*scaleFactor,14*
 Button[] buttons = { 
   in, out, up, down, left, right };
 
+//Touch setup
+OmicronAPI omicronManager;
+TouchListener touchListener;
+PApplet applet;
+boolean displayOnWall = false;
+
 boolean gui = true;
 boolean onWall = true;
 double tx, ty, sc;
@@ -91,8 +100,21 @@ boolean heatMap = true;
 int dateMin = 2001;
 int dateMax = 2010;
 
-void setup() {
-  // init databrowser obj
+public void init() {
+  super.init();
+  omicronManager = new OmicronAPI(this);      
+  if(displayOnWall) {
+      omicronManager.setFullscreen(true);
+  }
+}
+
+void setup() { 
+  applet = this;
+  touchListener = new TouchListener();
+  omicronManager.setTouchListener(touchListener);
+  if(displayOnWall) {    
+    omicronManager.ConnectToTracker(7001, 7340, "131.193.77.159");
+  }
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
   //  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
@@ -256,6 +278,7 @@ void setup() {
 }
 
 void draw() {
+  omicronManager.process(); //touch
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
 //  if(filtersHaveBeenChanged()){
 //    updateData();
@@ -280,8 +303,6 @@ void draw() {
           hand = hand || buttons[i].mouseOver();
         }
       }
-      
-      cursor(hand ? HAND : CROSS);
       
       if (keyPressed) {
         if (key == CODED) {
@@ -370,33 +391,42 @@ void clearData(){
   }
 }
 
-void updateData(){
-  statesValues.clear();
+void updateDataState(){
   statePoints.clear();
   if(timeScale == 1){
-    //HeatMap of all states
-    for(int i = 0; i < states.length; i++){
-      statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
-    }
     //All crashes grouped by years for a single state
     for(int i = 2001; i <= 2010; i++){
       statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
     }
   }
   else if(timeScale == 2){
-    for(int i = 0; i < states.length; i++){
-      statesValues.put(statesFull[i], db.getCrashMonthNumbersForYear(statesFull[i], numFatal, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
-    }
     for(int i = 1; i <= 12; i++){
       statePoints.put((Integer)i, db.getDayGeoDataForMonthYear_new(selectedState, numFatal, i, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
     }
   }
   else if(timeScale == 3){
-    for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashDayNumbersForMonthYear(statesFull[i], numFatal, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
-    }
     for(int i = 1; i <= 7; i++){
       statePoints.put((Integer)i, db.getHourGeoDataForMonthYear_new(selectedState, numFatal, i, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+  }
+}
+
+void updateData(){
+  statesValues.clear();
+  if(timeScale == 1){
+    //HeatMap of all states
+    for(int i = 0; i < states.length; i++){
+      statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+  }
+  else if(timeScale == 2){
+    for(int i = 0; i < states.length; i++){
+      statesValues.put(statesFull[i], db.getCrashMonthNumbersForYear(statesFull[i], numFatal, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+  }
+  else if(timeScale == 3){
+    for(int i = 0; i < states.length; i++){
+    statesValues.put(statesFull[i], db.getCrashDayNumbersForMonthYear(statesFull[i], numFatal, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
     }
   }
 //  else if(timeScale == 4){
@@ -407,7 +437,7 @@ void updateData(){
 //      statePoints.put((Integer)i, db.getHourGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
 //    }
 //  }
-  
+  updateDataState();
   updateDataNewRange();
 }
 
@@ -473,14 +503,17 @@ void mousePressed(){
         if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
           if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
             selectedState = statesFull[0];
+            updateDataState();
           }
           else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
             selectedState = statesFull[states.length-1];
+            updateDataState();
           }
           else{
             for(int i = 1; i < statesListButtonTop.length-1; i++){
               if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
                 selectedState = statesFull[i];
+                updateDataState();
               }
             }
           }
@@ -560,14 +593,6 @@ void keyReleased() {
     map.sc = 2.0;
     map.tx = -128;
     map.ty = -128; 
-  }
-  else if (key == 'm') {
-    currentProvider++;
-    
-    if( currentProvider > 2 )
-      currentProvider = 0;
-      
-    setMapProvider( currentProvider );
   }
 }
 
