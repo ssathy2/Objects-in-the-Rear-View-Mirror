@@ -273,10 +273,10 @@ void updateData(){
   statesValues.clear();
   statePoints.clear();
   for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
-  for(int i = 2001; i < 2011; i++){
-    statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, i, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+  for(int i = 2001; i < 2010; i++){
+    statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
   
   updateDataNewRange();
