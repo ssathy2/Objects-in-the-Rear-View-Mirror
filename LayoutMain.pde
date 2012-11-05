@@ -723,6 +723,7 @@ public void controlEvent(ControlEvent theEvent) {
         }
       }
     }
+    updateData();
   }
 }
 

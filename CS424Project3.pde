@@ -1,10 +1,8 @@
-import hypermedia.net.*;
-import omicronAPI.*;
-
 import com.modestmaps.*;
 import com.modestmaps.core.*;
 import com.modestmaps.geo.*;
 import com.modestmaps.providers.*;
+
 
 import controlP5.*;
 
@@ -16,11 +14,7 @@ DataBrowser db;
 PImage bgImage;
 PShape svg;
 
-//Touch setup
-OmicronAPI omicronManager;
-TouchListener touchListener;
-PApplet applet;
-boolean displayOnWall = false;
+
 
 //Boolean arrays to hold values of radiobuttons
 float[] driverAgeArr, driverGenderArr;
@@ -62,6 +56,26 @@ boolean shouldGetNewData;
 // what time frame we're looking at..1: month, 2: day: 3: hour..used for plotting and getting data
 int timeScale;
 
+ZoomButton out = new ZoomButton(5*scaleFactor,5*scaleFactor,14*scaleFactor,14*scaleFactor,false);
+ZoomButton in = new ZoomButton(22*scaleFactor,5*scaleFactor,14*scaleFactor,14*scaleFactor,true);
+PanButton up = new PanButton(14*scaleFactor,25*scaleFactor,14*scaleFactor,14*scaleFactor,UP);
+PanButton down = new PanButton(14*scaleFactor,57*scaleFactor,14*scaleFactor,14*scaleFactor,DOWN);
+PanButton left = new PanButton(5*scaleFactor,41*scaleFactor,14*scaleFactor,14*scaleFactor,LEFT);
+PanButton right = new PanButton(22*scaleFactor,41*scaleFactor,14*scaleFactor,14*scaleFactor,RIGHT);
+
+// all the buttons in one place, for looping:
+Button[] buttons = { 
+  in, out, up, down, left, right };
+
+boolean gui = true;
+boolean onWall = true;
+double tx, ty, sc;
+
+PVector mapSize;
+PVector mapOffset;
+
+Hashtable touchList;
+
 ControlP5 cp5;
 
 InteractiveMap map;
@@ -77,22 +91,7 @@ boolean heatMap = true;
 int dateMin = 2001;
 int dateMax = 2010;
 
-public void init() {
-  super.init();
-  omicronManager = new OmicronAPI(this);      
-  if(displayOnWall) {
-      omicronManager.setFullscreen(true);
-  }
-}
-
-void setup() { 
-  applet = this;
-  touchListener = new TouchListener();
-  omicronManager.setTouchListener(touchListener);
-  if(displayOnWall) {    
-    omicronManager.ConnectToTracker(7001, 7340, "131.193.77.159");
-  }
-  
+void setup() {
   // init databrowser obj
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
@@ -100,11 +99,11 @@ void setup() {
 //  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
-  
+
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
   displayHeight = WALLHEIGHT / 6 * scaleFactor;
-  
+
   size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
 
   cp5 = new ControlP5(this);
@@ -201,9 +200,15 @@ void setup() {
   String[] subdomains = new String[] { 
     "otile1", "otile2", "otile3", "otile4"
   }; // optional
+  
+//  mapSize = new PVector( width/2, 2000 );
+//  mapOffset = new PVector( width/4, 150 );
+    
   map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 10*scaleFactor, 10*scaleFactor);
   setMapProvider(0);
   map.setCenterZoom(locationUSA, 6); 
+
+  touchList = new Hashtable();
 
   timeSliderLeft = gPlotX1+15*scaleFactor;
   timeSliderTop = gPlotY2 + 45*scaleFactor; 
@@ -242,10 +247,15 @@ void setup() {
   
   clearData();
   updateData();
+  
+  addMouseWheelListener(new java.awt.event.MouseWheelListener() { 
+    public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) { 
+      mouseWheel(evt.getWheelRotation());
+    }
+  }); 
 }
 
 void draw() {
-  omicronManager.process(); //touch
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
 //  if(filtersHaveBeenChanged()){
 //    updateData();
@@ -256,23 +266,60 @@ void draw() {
       background(bgImage);
       drawGLayout();
       drawMainFilterLegend();
+      drawTimeSlider();
       drawHeatMap();
     }
     else {
       background(40);
+      drawTimeSlider();
       drawPlotMap();
+      boolean hand = false;
+      if (gui) {
+        for (int i = 0; i < buttons.length; i++) {
+          buttons[i].draw();
+          hand = hand || buttons[i].mouseOver();
+        }
+      }
+      
+      cursor(hand ? HAND : CROSS);
+      
+      if (keyPressed) {
+        if (key == CODED) {
+          if (keyCode == LEFT) {
+            map.tx += 5.0/map.sc;
+          }
+          else if (keyCode == RIGHT) {
+            map.tx -= 5.0/map.sc;
+          }
+          else if (keyCode == UP) {
+            map.ty += 5.0/map.sc;
+          }
+          else if (keyCode == DOWN) {
+            map.ty -= 5.0/map.sc;
+          }
+        }  
+        else if (key == '+' || key == '=') {
+          map.sc *= 1.05;
+        }
+        else if (key == '_' || key == '-' && map.sc > 2) {
+          map.sc *= 1.0/1.05;
+        }
+      }
+      
+      
+  
+      drawTimeSlider();
     }
   }
   else {
     background(bgImage);
     drawGLayout();
     drawMainFilterLegend();
+    drawTimeSlider();
     drawLineGraph();
     if (subFilterValueChosen)
       drawSubFilterLegend();
   }
-  
-drawTimeSlider();
 }
 
 void setMapProvider(int newProviderID){
@@ -297,6 +344,7 @@ void crashClicked(float xPos , float yPos){
   accidentsListTop.clear();
   accidentsListButtonTop.clear();
   for(int i = dateMin; i <= dateMax; i++){
+    System.out.println(i + " " + dateMin + " " + dateMax);
     Crash[] year_points = statePoints.get(i).values().toArray(new Crash[0]);
     for(int j = 0; j < year_points.length; j++){
       Point p = year_points[j].coordinates;
@@ -325,12 +373,40 @@ void clearData(){
 void updateData(){
   statesValues.clear();
   statePoints.clear();
-  for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+  if(timeScale == 1){
+    //HeatMap of all states
+    for(int i = 0; i < states.length; i++){
+      statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+    //All crashes grouped by years for a single state
+    for(int i = 2001; i <= 2010; i++){
+      statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
   }
-  for(int i = 2001; i <= 2010; i++){
-    statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+  else if(timeScale == 2){
+    for(int i = 0; i < states.length; i++){
+      statesValues.put(statesFull[i], db.getCrashMonthNumbersForYear(statesFull[i], numFatal, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+    for(int i = 1; i <= 12; i++){
+      statePoints.put((Integer)i, db.getDayGeoDataForMonthYear_new(selectedState, numFatal, i, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
   }
+  else if(timeScale == 3){
+    for(int i = 0; i < states.length; i++){
+    statesValues.put(statesFull[i], db.getCrashDayNumbersForMonthYear(statesFull[i], numFatal, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+    for(int i = 1; i <= 7; i++){
+      statePoints.put((Integer)i, db.getHourGeoDataForMonthYear_new(selectedState, numFatal, i, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+    }
+  }
+//  else if(timeScale == 4){
+//    for(int i = 0; i < states.length; i++){
+//    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+//    }
+//    for(int i = 1; i <= 24; i++){
+//      statePoints.put((Integer)i, db.getHourGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
+//    }
+//  }
   
   updateDataNewRange();
 }
@@ -422,7 +498,7 @@ void mousePressed(){
         if(mouseX >= specificAccidentBackButtonLeft && mouseX <= specificAccidentBackButtonLeft + specificAccidentBackButtonWidth && mouseY >= specificAccidentBackButtonTop && mouseY <= specificAccidentBackButtonTop + specificAccidentBackButtonHeight){
           viewingSpecificAccident = false;
         }
-        else if(mouseX >= 0){
+        else if(mouseX >= 0 && mouseX < width/2){
           crashClicked(mouseX, mouseY);
         }
       }
@@ -441,11 +517,11 @@ void mousePressed(){
               accidentsListMove = true;
             }
           }
-          else if(mouseX >= 0){
+          else if(mouseX >= 0 && mouseX <= width/2){
             crashClicked(mouseX, mouseY);
           }
         }
-        else if(mouseX >= 0){
+        else if(mouseX >= 0 && mouseX <= width/2){
           crashClicked(mouseX, mouseY);
         }
       }
@@ -470,35 +546,171 @@ void mouseReleased(){
   timeSliderHighMove = false;
 }
 
+void keyReleased() {
+  if (key == 'g' || key == 'G') {
+    gui = !gui;
+  }
+  else if (key == 's' || key == 'S') {
+    save("modest-maps-app.png");
+  }
+  else if (key == 'z' || key == 'Z') {
+    map.sc = pow(2, map.getZoom());
+  }
+  else if (key == ' ') {
+    map.sc = 2.0;
+    map.tx = -128;
+    map.ty = -128; 
+  }
+  else if (key == 'm') {
+    currentProvider++;
+    
+    if( currentProvider > 2 )
+      currentProvider = 0;
+      
+    setMapProvider( currentProvider );
+  }
+}
+
+
+// see if we're over any buttons, otherwise tell the map to drag
+void mouseDragged() {
+  boolean hand = false;
+  if (gui) {
+    for (int i = 0; i < buttons.length; i++) {
+      hand = hand || buttons[i].mouseOver();
+      if (hand) break;
+    }
+  }
+  if (!hand) {
+    //map.mouseDragged(); 
+  }
+}
+
+// zoom in or out:
+void mouseWheel(int delta) {
+  float sc = 1.0;
+  if (delta < 0) {
+    sc = 1.05;
+  }
+  else if (delta > 0) {
+    sc = 1.0/1.05; 
+  }
+  float mx = (mouseX - mapOffset.x) - mapSize.x/2;
+  float my = (mouseY - mapOffset.y) - mapSize.y/2;
+  map.tx -= mx/map.sc;
+  map.ty -= my/map.sc;
+  map.sc *= sc;
+  map.tx += mx/map.sc;
+  map.ty += my/map.sc;
+}
+
+void mouseClicked() {
+  if (in.mouseOver()) {
+    map.zoomIn();
+  }
+  else if (out.mouseOver()) {
+    map.zoomOut();
+  }
+  else if (up.mouseOver()) {
+    map.panUp();
+  }
+  else if (down.mouseOver()) {
+    map.panDown();
+  }
+  else if (left.mouseOver()) {
+    map.panLeft();
+  }
+  else if (right.mouseOver()) {
+    map.panRight();
+  }
+}
+
+
+PVector lastTouchPos = new PVector();
+PVector lastTouchPos2 = new PVector();
+int touchID1;
+int touchID2;
+
+PVector initTouchPos = new PVector();
+PVector initTouchPos2 = new PVector();
 
 void touchDown(int ID, float xPos, float yPos, float xWidth, float yWidth){
-  println("X: " + xPos + " Y: " + yPos);
   noFill();
   stroke(255,0,0);
   ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
   
-  cp5.getPointer().set(floor(xPos), floor(yPos));    
-  if(displayOnWall) {
-    cp5.getPointer().pressed();
+  // Update the last touch position
+  lastTouchPos.x = xPos;
+  lastTouchPos.y = yPos;
+  
+  // Add a new touch ID to the list
+  Touch t = new Touch( ID, xPos, yPos, xWidth, yWidth );
+  touchList.put(ID,t);
+  
+  if( touchList.size() == 1 ){ // If one touch record initial position (for dragging). Saving ID 1 for later
+    touchID1 = ID;
+    initTouchPos.x = xPos;
+    initTouchPos.y = yPos;
+  }
+  else if( touchList.size() == 2 ){ // If second touch record initial position (for zooming). Saving ID 2 for later
+    touchID2 = ID;
+    initTouchPos2.x = xPos;
+    initTouchPos2.y = yPos;
   }
 }// touchDown
 
 void touchMove(int ID, float xPos, float yPos, float xWidth, float yWidth){
-  println("X: " + xPos + " Y: " + yPos);
   noFill();
   stroke(0,255,0);
   ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
-
-  cp5.getPointer().set(floor(xPos), floor(yPos));
+  
+  if( touchList.size() < 2 ){
+    // Only one touch, drag map based on last position
+    map.tx += (xPos - lastTouchPos.x)/map.sc;
+    map.ty += (yPos - lastTouchPos.y)/map.sc;
+  } else if( touchList.size() == 2 ){
+    // Only two touch, scale map based on midpoint and distance from initial touch positions
+    
+    float sc = dist(lastTouchPos.x, lastTouchPos.y, lastTouchPos2.x, lastTouchPos2.y);
+    float initPos = dist(initTouchPos.x, initTouchPos.y, initTouchPos2.x, initTouchPos2.y);
+    
+    PVector midpoint = new PVector( (lastTouchPos.x+lastTouchPos2.x)/2, (lastTouchPos.y+lastTouchPos2.y)/2 );
+    sc -= initPos;
+    sc /= 5000;
+    sc += 1;
+    //println(sc);
+    float mx = (midpoint.x - mapOffset.x) - mapSize.x/2;
+    float my = (midpoint.y - mapOffset.y) - mapSize.y/2;
+    map.tx -= mx/map.sc;
+    map.ty -= my/map.sc;
+    map.sc *= sc;
+    map.tx += mx/map.sc;
+    map.ty += my/map.sc;
+  } else if( touchList.size() >= 5 ){
+    
+    // Zoom to entire USA
+    map.setCenterZoom(locationUSA, 6);  
+  }
+  
+  // Update touch IDs 1 and 2
+  if( ID == touchID1 ){
+    lastTouchPos.x = xPos;
+    lastTouchPos.y = yPos;
+  } else if( ID == touchID2 ){
+    lastTouchPos2.x = xPos;
+    lastTouchPos2.y = yPos;
+  } 
+  
+  // Update touch list
+  Touch t = new Touch( ID, xPos, yPos, xWidth, yWidth );
+  touchList.put(ID,t);
 }// touchMove
 
 void touchUp(int ID, float xPos, float yPos, float xWidth, float yWidth){
-  println("X: " + xPos + " Y: " + yPos);
   noFill();
   stroke(0,0,255);
   ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
-  cp5.getPointer().set(floor(xPos), floor(yPos));
-  if(displayOnWall) {
-    cp5.getPointer().released();
-  }
+  
+  // Remove touch and ID from list
+  touchList.remove(ID);
 }// touchUp

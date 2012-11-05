@@ -200,6 +200,7 @@ void drawHeatMap() {
   PShape separator = svg.getChild("separator");
 }
 
+
 void drawPlotMap(){
   strokeWeight(2);
   rectMode(CORNERS);
@@ -208,6 +209,7 @@ void drawPlotMap(){
   stroke(#FA8A11);
   //loadPixels();
   for(int i = dateMin; i <= dateMax; i++){
+    System.out.println(i + " " + dateMin + " " + dateMax);
     Crash[] year_points = statePoints.get(i).values().toArray(new Crash[0]);
     for(int j = 0; j < year_points.length; j++){
       Point p = year_points[j].coordinates;
