@@ -32,7 +32,7 @@ String[] statesFull = {"Alaska","Alabama","Arkansas","Arizona","California","Col
 "Illinois","Indiana","Kansas","Kentucky","Louisiana","Massachusetts","Maryland","Maine","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York",
 "Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"};
 
-int selectedState = 14;
+String selectedState = "Illinois";
 
 float statesListLeft, statesListWidth, statesListHeight, statesListMovement, statesListOldY, statesListButtonLeft, statesListButtonWidth, statesListButtonHeight;
 float accidentsListLeft, accidentsListWidth, accidentsListHeight, accidentsListMovement, accidentsListOldY, accidentsListButtonLeft, accidentsListButtonWidth, accidentsListButtonHeight;
@@ -74,7 +74,7 @@ void drawHeatMap() {
   textSize(12*scaleFactor);
   for (int i = states.length - 2; i > 0; i--) {
     PShape state = svg.getChild(states[i]);
-    if(i == selectedState){
+    if(statesFull[i] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -98,7 +98,7 @@ void drawHeatMap() {
   
   
     PShape state = svg.getChild(states[0]);
-    if(0 == selectedState){
+    if(statesFull[0] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -118,7 +118,7 @@ void drawHeatMap() {
     text(statesValue[0], statesListLeft+statesListWidth - 10*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
     
     state = svg.getChild(states[states.length-1]);
-    if(states.length-1 == selectedState){
+    if(statesFull[states.length-1] == selectedState){
       fill(#FA8A11);
     }
     else{
@@ -164,7 +164,7 @@ void drawHeatMap() {
   textSize(28*scaleFactor);
   fill(40);
   textAlign(CENTER);
-  text(statesFull[selectedState], 511*scaleFactor+257*scaleFactor/2, gPlotY1 + 37*scaleFactor);
+  text(selectedState, 511*scaleFactor+257*scaleFactor/2, gPlotY1 + 37*scaleFactor);
   textSize(18*scaleFactor);
   textAlign(LEFT);
   text("Accidents", 511*scaleFactor, gPlotY1 + 70*scaleFactor);
