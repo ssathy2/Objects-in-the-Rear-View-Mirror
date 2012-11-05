@@ -11,12 +11,12 @@ import controlP5.*;
 
 final static int WALLWIDTH = 8160;
 final static int WALLHEIGHT = 2304;
-int displayWidth, displayHeight;
+int dWidth, dHeight;
 static int scaleFactor;
 DataBrowser db;
 PImage bgImage;
 PShape svg;
-
+PFont helvetica;
 
 
 //Boolean arrays to hold values of radiobuttons
@@ -109,9 +109,13 @@ public void init() {
 }
 
 void setup() { 
-  scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
+ 
+  scaleFactor = (displayOnWall)?6:1; // 1 for widescreen monitors and 6 for the wall
+  dWidth = (WALLWIDTH / 6) * scaleFactor;
+  dHeight = (WALLHEIGHT / 6) * scaleFactor;
 
-  size(8160/6, 2304/6, JAVA2D);
+  size(dWidth, dHeight, JAVA2D);
+  
   applet = this;
   touchListener = new TouchListener();
   omicronManager.setTouchListener(touchListener);
@@ -133,15 +137,15 @@ void setup() {
   textFont(helvetica);
 
   bgImage = loadImage("bg.jpg");
-  bgImage.resize(8160/6, 2304/6);
+  bgImage.resize(dWidth * scaleFactor, dHeight * scaleFactor);
   background(bgImage);
 
   gPlotX1 = scaleFactor * 100;
   gPlotY1 = scaleFactor * 70;
-  //  gPlotX2 = displayWidth - 300*scaleFactor;
-  //  gPlotY2 = displayHeight - 140*scaleFactor;
-  gPlotX2 = width - 190*scaleFactor;
-  gPlotY2 = height - 70*scaleFactor;
+  //  gPlotX2 = dWidth - 300*scaleFactor;
+  //  gPlotY2 = dHeight - 140*scaleFactor;
+  gPlotX2 = dWidth - 190*scaleFactor;
+  gPlotY2 = dHeight - 70*scaleFactor;
 
   chosenMainFilterArr = new boolean[8];       //Holds at most one true element, this element indicates the main filter.
 

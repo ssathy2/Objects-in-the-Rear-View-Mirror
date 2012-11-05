@@ -4,6 +4,9 @@ final int MAXNUMBEROFSUBFILTERS = 10;
 float mLegendPlotX1, mLegendPlotX2, mLegendPlotY1, mLegendPlotY2;
 float sLegendPlotX1, sLegendPlotX2, sLegendPlotY1, sLegendPlotY2;
 
+Group gMainLegend;
+Group gSubLegend;
+
 color[] mainFilterColorsArr;
 
 void drawMainFilterLegend() {  //Called in draw()
@@ -54,10 +57,45 @@ void drawSubFilterLegend() {    //Called in draw()
 
 
 
-void drawMainFilterLegendText(String[] mainFilterStrings) {  //Ultimately, Called in setup()
+void drawMainFilterLegendText(ArrayList passedArrayList) {  //Ultimately, Called in setup()
+/*
   
-  float inc = scaleFactor * 2;
+  float inc = scaleFactor * 10;
   
+  Group gMainLegend = cp5.addGroup("gMainLegend")
+    .setPosition((int)mLegendPlotX1, (int)mLegendPlotY1)
+      .setBackgroundHeight(int(mLegendPlotY2 - mLegendPlotY1))
+        .setWidth(int(sLegendPlotX2 - sLegendPlotX1))
+          .hideBar()
+            .setBackgroundColor(color(240, 90))
+              // .activateEvent(false)
+              .setVisible(true)
+                ;
+                
+  for(int i = 0; i < passedArrayList.size(); i++){
+   
+    Integer temp = new Integer(i);
+    
+    
+    if((i + 1) % 2 == 0){
+       cp5.addTextLabel(temp.toString())
+               .setText(String(passedArrayList[i]))
+               .setPosition(10, inc)
+               .setColorValue(mainFilterColorsArr[i]).lineBreak()
+               .setGroup(gMainLegend)               ;
+    }
+    else{
+   cp5.addTextLabel(temp.toString())
+               .setText(String(passedArrayList[i]))
+               .setPosition(10, inc)
+               .setColorValue(mainFilterColorsArr[i])
+               .setGroup(gMainLegend)
+               ;
+    }
+    
+    inc += scaleFactor * 14;
+  }
+  /*
   for(int i = 0; i < mainFilterStrings.length; i++){
     if(mainFilterStrings[i] != null){
       cp5.addTextlabel(mainFilterStrings[i])
@@ -67,9 +105,9 @@ void drawMainFilterLegendText(String[] mainFilterStrings) {  //Ultimately, Calle
                     .setFont(createFont("Georgia", 10 * scaleFactor))
                     ;
                     inc+= scaleFactor * 12;
-    }
+    }  */
   }
-}
+
 
 
 

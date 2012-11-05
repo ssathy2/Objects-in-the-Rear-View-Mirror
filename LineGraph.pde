@@ -1,5 +1,7 @@
 /* Class file to draw the line graphs themselves */
-
+ 
+ float maxYAxis;
+ 
 HashMap<Integer, Integer> plotData;
 
 
@@ -8,7 +10,7 @@ HashMap<Integer, Integer> plotData;
   //int topMargin = 100;
   //int plotHeight = 250;
   //float timer = 0.0;
-  PFont helvetica;  
+  
 
 
 int maxVal;
@@ -29,11 +31,14 @@ void drawLineGraph() {
 
   getData();
 
-  noFill();
-  stroke(#2E5AD8);
-  strokeWeight(2); 
-  beginShape();
+  maxYAxis = 1.42857142857 * maxVal;   //To make up for the diminished graph plot values... 1.42857 * .7    is 1... so this makes the data representation correct.
 
+  fill(mainFilterColorsArr[1], 50);
+  stroke(mainFilterColorsArr[1]);  // Need to cycle through 
+  strokeWeight(3); 
+  beginShape();
+  vertex(gPlotX1 + scaleFactor * 1, gPlotY2  - scaleFactor * 1);
+  
   float x, y;
 
   /*
@@ -46,7 +51,7 @@ void drawLineGraph() {
   for (int i = dateMin; i <= dateMax; i++) {
       x = map(i, dateMin, dateMax, gPlotX1, gPlotX2);    
     if (plotData.get(i) != null) {
-      y = map(plotData.get(i), 0, maxVal, gPlotY2, gPlotY1);
+      y = map(plotData.get(i) * 0.7, 0, maxVal, gPlotY2, gPlotY1);    //Plot at 70% of actual value, then we make up the difference by making the units follow it. (We will display more units, 1.2 x y axis units for example)
     }
     else {
       y = map(0, 0, maxVal, gPlotY2, gPlotY1);      
@@ -60,9 +65,17 @@ void drawLineGraph() {
      y = map(values[values.length-1], 0, 200, height - topMargin, height - topMargin - plotHeight);
      curveVertex(x, y);
      */
-
-    endShape();
-
+    vertex(gPlotX2  - scaleFactor * 1, gPlotY2  - scaleFactor * 1);
+    endShape(CLOSE);
+    
+    rectMode(CORNERS);
+    strokeWeight(6);
+    stroke(0);
+    noFill();
+    rect(gPlotX1, gPlotY1, gPlotX2, gPlotY2, scaleFactor * 6);
+    
+    drawVGraphLabel();
+    
     // draw points on mouse over
     /*
   for (int i = 0; i < values.length; i++) {
