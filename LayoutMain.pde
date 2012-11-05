@@ -35,7 +35,8 @@ CheckBox weather;
 CheckBox accidentAutomobile, accidentSurface;
 CheckBox intoxicants;
 
-
+static String months [] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+static String daysofweek [] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
 void drawLayoutMain() {
 
@@ -43,7 +44,7 @@ void drawLayoutMain() {
   pFont = createFont("Calibri Bold", 18, true); // use true/false for smooth/no-smooth
   toggleFont = createFont("Calibri Bold", 9, true);
   cp5Font = new ControlFont(pFont, 9);
-  
+
   cp5.setControlFont(toggleFont);
 
   rectMode(CORNERS);
@@ -84,7 +85,7 @@ void drawLayoutMain() {
 void checkIfAFilterMenuIsOpen()
 {
   if (cp5.getGroup("g1").isVisible() | cp5.getGroup("g2").isVisible() 
-    | cp5.getGroup("g3").isVisible() | cp5.getGroup("g4").isVisible() 
+    | cp5.getGroup("g3").isVisible() 
     | cp5.getGroup("g5").isVisible() | cp5.getGroup("g6").isVisible())
     filterMenuIsOpen = true;
 
@@ -226,7 +227,7 @@ void drawGraphSwitchButtons() {
               .setPosition(0, 0)
                 .setGroup(graphSwitchGroup)
                   .setColorActive(#025CE8)
-                  .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
+                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
 
 
   cp5.addButton("Graph")
@@ -238,7 +239,7 @@ void drawGraphSwitchButtons() {
               .setPosition(0, scaleFactor * 101)
                 .setGroup(graphSwitchGroup)
                   .setColorActive(#FC1C1C)
-                  .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
+                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
 }
 
 
@@ -251,7 +252,7 @@ void clear() {          // Method to clear enabled filters in currently open fil
 
     cp5.getGroup("driverAge").setArrayValue(driverAgeArr);
     cp5.getGroup("driverGender").setArrayValue(driverGenderArr);
-       showMale = true;
+    showMale = true;
     showFemale = true;
     shouldGetNewData = true;
   }
@@ -269,15 +270,11 @@ void clear() {          // Method to clear enabled filters in currently open fil
     shouldGetNewData = true;
     cp5.getGroup("weather").setArrayValue(weatherArr);
   }
-  else if (cp5.getGroup("g4").isVisible()) {
-    
-    
-    
-  }
+
   else if (cp5.getGroup("g5").isVisible()) {
     accidentAutomobileArr = new float[7];
     accidentSurfaceArr = new float[5];
-  currentSurfaceConds.clear();
+    currentSurfaceConds.clear();
     currentARF.clear();
     shouldGetNewData = true;
     cp5.getGroup("accidentAutomobile").setArrayValue(accidentAutomobileArr);
@@ -298,6 +295,25 @@ void Number_of_People_Involved(int theValue) {
   }
 }
 
+int convertMonthnameToInteger(String monthName) {
+  int retVal = 0;
+  for(int i = 0; i < months.length; i++) {
+    if(months[i].equals(monthName)) {
+      retVal = i;
+    }
+  }
+  return retVal;
+}
+
+int convertDaynameToInteger(String dayName) {
+  int retVal = 0;  
+  for(int i = 0; i < daysofweek.length; i++) {
+    if(daysofweek[i].equals(dayName)) {
+      retVal = i; 
+    }
+  }
+  return retVal; 
+}
 
 //
 //
@@ -463,24 +479,36 @@ public void controlEvent(ControlEvent theEvent) {
     if (cp5.getGroup("g4").isVisible() && theEvent.getController().getParent().getName() == "g4") {
       // set timescale for what we're displaying on the graph/map
       if (theEvent.getLabel().equals("Year Range")) {
-        timeScale = 1;
         hGraphLabel.setText("Years");
+        monthSelectedRBtn.deactivateAll();
+        weekdaySelectedRBtn.deactivateAll();
+        timeOfDaySelectedRBtn.deactivateAll();
+        timeScale = 1;
         shouldGetNewData = true;
       }
-      else if (theEvent.getLabel().equals("Months of a Year")) {
-        timeScale = 2; 
-        hGraphLabel.setText("Months");
-        shouldGetNewData = true;
+      else if (theEvent.getLabel().equals("Month of a Year")) {
+        hGraphLabel.setText("Months of the Year");
+        
+          if ( !cp5.getGroup("g4Second1").isVisible())
+          resetSubFilterGroups();
+
+        cp5.getGroup("g4Second1").setVisible(!cp5.getGroup("g4Second1").isVisible());
       }
-      else if (theEvent.getLabel().equals("Weekday Averages")) {
-        timeScale = 3; 
-        hGraphLabel.setText("Weekdays");
-        shouldGetNewData = true;
+      else if (theEvent.getLabel().equals("Weekday of a Month")) {
+        hGraphLabel.setText("Weekdays of the Month");
+        
+       if ( !cp5.getGroup("g4Second2").isVisible())
+          resetSubFilterGroups();
+
+        cp5.getGroup("g4Second2").setVisible(!cp5.getGroup("g4Second2").isVisible());
       }
-      else if (theEvent.getLabel().equals("Time of Day Averages")) {
-        timeScale = 4; 
-        hGraphLabel.setText("Hours in a Day");
-        shouldGetNewData = true;
+      else if (theEvent.getLabel().equals("Time of a Weekday")) {
+        hGraphLabel.setText("Hours of the Day");
+       
+         if ( !cp5.getGroup("g4Second3").isVisible())
+          resetSubFilterGroups();
+
+        cp5.getGroup("g4Second3").setVisible(!cp5.getGroup("g4Second3").isVisible());
       }
     }
   }
@@ -488,15 +516,42 @@ public void controlEvent(ControlEvent theEvent) {
 
   if (theEvent.isGroup())
   {
-
+    if(theEvent.name().equals("selectAYear")) {
+       for(int i = 0; i < 10; i++) {
+         if(monthSelectedRBtn.getState(i)) {
+           currentYear = Integer.parseInt(monthSelectedRBtn.getItem(i).getLabel());
+           timeScale = 2;
+           shouldGetNewData = true; 
+         }         
+       }      
+    }
+    if(theEvent.name().equals("selectAMonth")) {
+       for(int i = 0; i < 12; i++) {
+         if(weekdaySelectedRBtn.getState(i)) {
+           currentMonth = convertMonthnameToInteger(weekdaySelectedRBtn.getItem(i).getLabel());
+           timeScale = 3;
+           shouldGetNewData = true; 
+         }         
+       }      
+    }
+    if(theEvent.name().equals("selectAWeekDay")) {
+       for(int i = 0; i < 7; i++) {
+         if(timeOfDaySelectedRBtn.getState(i)) {
+           // the db maps 1 to monday, 2 to tuesday, etc..0 isn't mapped to a day
+           currentDayOfWeek = 1 + convertDaynameToInteger(timeOfDaySelectedRBtn.getItem(i).getLabel());
+           timeScale = 4;
+           shouldGetNewData = true; 
+         }         
+       }      
+    }
     if (theEvent.name().equals("stateSelection")) {
 
-     int stateIndex = (int)theEvent.group().value();
+      int stateIndex = (int)theEvent.group().value();
       println("New State: " + ssListBox.getItem(stateIndex).getText());
       currentState = ssListBox.getItem(stateIndex).getText();
       shouldGetNewData = true;
     }
-      if (theEvent.isFrom(driverAge)) {
+    if (theEvent.isFrom(driverAge)) {
 
       driverAgeArr = driverAge.getArrayValue();
       currentAges.clear();
@@ -681,6 +736,15 @@ void resetSubFilterGroups() {
   cp5.getGroup("g1Second2")
     .setVisible(false);
 
+  cp5.getGroup("g4Second1")
+    .setVisible(false);
+
+  cp5.getGroup("g4Second2")
+    .setVisible(false);
+
+  cp5.getGroup("g4Second3")
+    .setVisible(false);
+
   cp5.getGroup("g5Second1")
     .setVisible(false);
 
@@ -722,8 +786,8 @@ void resetFilterGroups() {
 
 void drawTimeSlider() {
 
- 
-noStroke();
+
+  noStroke();
   strokeWeight(0);
   if (timeSliderLowMove && mouseX - mouseXOld < timeSliderHighLeft - timeSliderLowRight && timeSliderLowRight + mouseX - mouseXOld >= timeSliderLeft) {
     timeSliderLowLeft += mouseX - mouseXOld;
@@ -735,7 +799,7 @@ noStroke();
     timeSliderHighRight += mouseX - mouseXOld;
     mouseXOld = mouseX;
   }
-  
+
   timeSliderPercentageLeft = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100);
   timeSliderPercentageRight = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100);
 
@@ -748,15 +812,15 @@ noStroke();
   fill(20);
   rectMode(CORNERS);
   rect(timeSliderLeft, timeSliderTop + (scaleFactor * 10), timeSliderRight, timeSliderBottom + (scaleFactor * 10));
-  
+
   //Two slide buttons
   fill(70);
   rect(timeSliderLowLeft, timeSliderButtonTop, timeSliderLowRight, timeSliderButtonBottom);
   rect(timeSliderHighLeft, timeSliderButtonTop, timeSliderHighRight, timeSliderButtonBottom);
-  
+
   //YellowBar
   fill(#FA8A11);                                        
-  rect(timeSliderLowRight, timeSliderButtonTop + (scaleFactor * 30) , timeSliderHighLeft, timeSliderButtonBottom - (scaleFactor * 5));
+  rect(timeSliderLowRight, timeSliderButtonTop + (scaleFactor * 30), timeSliderHighLeft, timeSliderButtonBottom - (scaleFactor * 5));
 
   //Two percentage blocks
   fill(0);
@@ -764,50 +828,53 @@ noStroke();
   rect(timeSliderHighLeft, timeSliderButtonTop - 25*scaleFactor, timeSliderHighRight + 30*scaleFactor, timeSliderButtonTop - 5*scaleFactor);
   /*
   //percentage values
-  fill(240);
-  textAlign(CENTER);
-  textSize(12*scaleFactor);
-  text(timeSliderPercentageLeft + "%", timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
-  text(timeSliderPercentageRight + "%", timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);  */
-  
-   //TODO make it work for all date ranges (day, month, year)
-   fill(235);
-  if(timeScale == 1){
+   fill(240);
+   textAlign(CENTER);
+   textSize(12*scaleFactor);
+   text(timeSliderPercentageLeft + "%", timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+   text(timeSliderPercentageRight + "%", timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);  */
+
+  //TODO make it work for all date ranges (day, month, year)
+  fill(235);
+  if (timeScale == 1) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
     text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    if(tempDateMin != dateMin || tempDateMax != dateMax){
+    if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
       updateDataNewRange();
     }
-  } else if(timeScale == 2){
+  } 
+  else if (timeScale == 2) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
     text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    if(tempDateMin != dateMin || tempDateMax != dateMax){
-      dateMin = tempDateMin;
-      dateMax = tempDateMax;
-      updateDataNewRange();
-    }   
-  } else if(timeScale == 3) {
-    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
-    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
-    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    if(tempDateMin != dateMin || tempDateMax != dateMax){
+    if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
       updateDataNewRange();
     }
-  } else if(timeScale == 4) {
+  } 
+  else if (timeScale == 3) {
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
+    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    if (tempDateMin != dateMin || tempDateMax != dateMax) {
+      dateMin = tempDateMin;
+      dateMax = tempDateMax;
+      updateDataNewRange();
+    }
+  } 
+  else if (timeScale == 4) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
     text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    if(tempDateMin != dateMin || tempDateMax != dateMax){
+    if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
       updateDataNewRange();

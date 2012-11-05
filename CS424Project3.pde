@@ -243,6 +243,7 @@ void draw() {
   else {
     background(bgImage);
     drawGLayout();
+    drawMainFilterLegend();
     drawLineGraph();
     if (subFilterValueChosen)
       drawSubFilterLegend();
