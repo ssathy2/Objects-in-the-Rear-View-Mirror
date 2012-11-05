@@ -865,8 +865,8 @@ void drawTimeSlider() {
     }
   } 
   else if (timeScale == 3) {
-    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
-    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(31-1)+1);
+    int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(7-1)+1);
+    int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(7-1)+1);
     text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     if (tempDateMin != dateMin || tempDateMax != dateMax) {

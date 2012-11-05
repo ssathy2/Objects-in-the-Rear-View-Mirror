@@ -129,7 +129,6 @@ void setup() {
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
-
   cp5 = new ControlP5(this);
 
   smooth();
@@ -188,10 +187,10 @@ void setup() {
   statesListTop[states.length - 1] = gPlotY2-45*scaleFactor;
   statesListButtonTop[states.length - 1] = statesListTop[states.length-1] + 2*scaleFactor;
   
-  toggleMapLeft = statesListLeft + statesListWidth + 15*scaleFactor;
-  toggleMapTop = statesListTop[0];
-  toggleMapRight = toggleMapLeft + 15*scaleFactor;
-  toggleMapBottom = toggleMapTop + 15*scaleFactor;
+  toggleMapLeft = width/2 - 40*scaleFactor;
+  toggleMapTop = height/2 - 40*scaleFactor;
+  toggleMapRight = width/2 + 40*scaleFactor;
+  toggleMapBottom = height/2 + 40*scaleFactor;
   
   //Accidents
   accidentsListLeft = statesListLeft;
@@ -271,14 +270,6 @@ void setup() {
   
   clearData();
   updateData();
-  
-  addMouseWheelListener(new java.awt.event.MouseWheelListener() { 
-    public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) { 
-      if(evt != null) {
-        mouseWheel(evt.getWheelRotation());
-      }
-    }
-  }); 
 }
 
 void draw() {
@@ -304,9 +295,7 @@ void draw() {
       if (gui) {
         for (int i = 0; i < buttons.length; i++) {
           buttons[i].draw();
-          if(buttons[i] != null) {
-            hand = hand || buttons[i].mouseOver();
-          }
+          hand = hand || buttons[i].mouseOver();
         }
       }
       
@@ -334,6 +323,12 @@ void draw() {
       }
       drawTimeSlider();
     }
+    fill(240);
+    rect(toggleMapLeft, toggleMapTop, toggleMapRight, toggleMapBottom);
+    fill(40);
+    textSize(18*scaleFactor);
+    textAlign(CENTER);
+    text("View\nState", toggleMapLeft + (toggleMapRight - toggleMapLeft)/2, toggleMapTop + (toggleMapBottom - toggleMapTop)/3);
   }
   else {
     background(bgImage);
@@ -499,88 +494,88 @@ void updateDataNewRange(){
   dataMax = statesValue[0];
 }
 
-void mousePressed(){
-  if(mapIsShown){
-    if(heatMap){
-      if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
-        if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
-          if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
-            selectedState = statesFull[0];
-            updateDataState();
-          }
-          else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
-            selectedState = statesFull[states.length-1];
-            updateDataState();
-          }
-          else{
-            for(int i = 1; i < statesListButtonTop.length-1; i++){
-              if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
-                selectedState = statesFull[i];
-                updateDataState();
-              }
-            }
-          }
-        }else{
-          statesListOldY = mouseY;
-          statesListMove = true;
-        }
-      }
-      else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
-        heatMap = !heatMap;
-      }
-    }
-    else{
-      if(viewingSpecificAccident){
-        if(mouseX >= specificAccidentBackButtonLeft && mouseX <= specificAccidentBackButtonLeft + specificAccidentBackButtonWidth && mouseY >= specificAccidentBackButtonTop && mouseY <= specificAccidentBackButtonTop + specificAccidentBackButtonHeight){
-          viewingSpecificAccident = false;
-        }
-        else if(mouseX >= 0 && mouseX < width/2){
-          crashClicked(mouseX, mouseY);
-        }
-      }
-      else{
-        if(accidents.size() > 0){
-          if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop.get(0) && mouseY <= accidentsListTop.get(accidents.size() - 1) + accidentsListHeight) {
-            if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
-              for(int i = 0; i < accidentsListButtonTop.size(); i++){
-                if(mouseY >= accidentsListButtonTop.get(i) && mouseY <= accidentsListButtonTop.get(i) + accidentsListButtonHeight){
-                  viewingSpecificAccident = true;
-                  specificAccident = i;
-                }
-              }
-            }else{
-              accidentsListOldY = mouseY;
-              accidentsListMove = true;
-            }
-          }
-          else if(mouseX >= 0 && mouseX <= width/2){
-            crashClicked(mouseX, mouseY);
-          }
-        }
-        else if(mouseX >= 0 && mouseX <= width/2){
-          crashClicked(mouseX, mouseY);
-        }
-      }
-    }
-  }
-  if(mouseY >= timeSliderButtonTop && mouseY <= timeSliderButtonBottom){
-    if(mouseX >= timeSliderLowLeft && mouseX <= timeSliderLowRight){
-      mouseXOld = mouseX;
-      timeSliderLowMove = true;
-    }
-    else if(mouseX >= timeSliderHighLeft && mouseX <= timeSliderHighRight){
-      mouseXOld = mouseX;
-      timeSliderHighMove = true;
-    }
-  }
-}
-
-void mouseReleased(){
-  statesListMove = false;
-  accidentsListMove = false;
-  timeSliderLowMove = false;
-  timeSliderHighMove = false;
-}
+//void mousePressed(){
+//  if(mapIsShown){
+//    if(heatMap){
+//      if(mouseX >= statesListLeft && mouseX <= statesListLeft + statesListWidth && mouseY >= statesListTop[0] && mouseY <= statesListTop[states.length - 1] + statesListHeight) {
+//        if(mouseX >= statesListButtonLeft && mouseX <= statesListButtonLeft + statesListButtonWidth){
+//          if(mouseY >= statesListButtonTop[0] && mouseY <= statesListButtonTop[0] + statesListButtonHeight){
+//            selectedState = statesFull[0];
+//            updateDataState();
+//          }
+//          else if(mouseY >= statesListButtonTop[states.length-1] && mouseY <= statesListButtonTop[states.length-1] + statesListButtonHeight){
+//            selectedState = statesFull[states.length-1];
+//            updateDataState();
+//          }
+//          else{
+//            for(int i = 1; i < statesListButtonTop.length-1; i++){
+//              if(mouseY >= statesListButtonTop[i] && mouseY <= statesListButtonTop[i] + statesListButtonHeight){
+//                selectedState = statesFull[i];
+//                updateDataState();
+//              }
+//            }
+//          }
+//        }else{
+//          statesListOldY = mouseY;
+//          statesListMove = true;
+//        }
+//      }
+//      else if(mouseX >= toggleMapLeft && mouseX <= toggleMapRight && mouseY >= toggleMapTop && mouseY <= toggleMapBottom){
+//        heatMap = !heatMap;
+//      }
+//    }
+//    else{
+//      if(viewingSpecificAccident){
+//        if(mouseX >= specificAccidentBackButtonLeft && mouseX <= specificAccidentBackButtonLeft + specificAccidentBackButtonWidth && mouseY >= specificAccidentBackButtonTop && mouseY <= specificAccidentBackButtonTop + specificAccidentBackButtonHeight){
+//          viewingSpecificAccident = false;
+//        }
+//        else if(mouseX >= 0 && mouseX < width/2){
+//          crashClicked(mouseX, mouseY);
+//        }
+//      }
+//      else{
+//        if(accidents.size() > 0){
+//          if(mouseX >= accidentsListLeft && mouseX <= accidentsListLeft + accidentsListWidth && mouseY >= accidentsListTop.get(0) && mouseY <= accidentsListTop.get(accidents.size() - 1) + accidentsListHeight) {
+//            if(mouseX >= accidentsListButtonLeft && mouseX <= accidentsListButtonLeft + accidentsListButtonWidth){
+//              for(int i = 0; i < accidentsListButtonTop.size(); i++){
+//                if(mouseY >= accidentsListButtonTop.get(i) && mouseY <= accidentsListButtonTop.get(i) + accidentsListButtonHeight){
+//                  viewingSpecificAccident = true;
+//                  specificAccident = i;
+//                }
+//              }
+//            }else{
+//              accidentsListOldY = mouseY;
+//              accidentsListMove = true;
+//            }
+//          }
+//          else if(mouseX >= 0 && mouseX <= width/2){
+//            crashClicked(mouseX, mouseY);
+//          }
+//        }
+//        else if(mouseX >= 0 && mouseX <= width/2){
+//          crashClicked(mouseX, mouseY);
+//        }
+//      }
+//    }
+//  }
+//  if(mouseY >= timeSliderButtonTop && mouseY <= timeSliderButtonBottom){
+//    if(mouseX >= timeSliderLowLeft && mouseX <= timeSliderLowRight){
+//      mouseXOld = mouseX;
+//      timeSliderLowMove = true;
+//    }
+//    else if(mouseX >= timeSliderHighLeft && mouseX <= timeSliderHighRight){
+//      mouseXOld = mouseX;
+//      timeSliderHighMove = true;
+//    }
+//  }
+//}
+//
+//void mouseReleased(){
+//  statesListMove = false;
+//  accidentsListMove = false;
+//  timeSliderLowMove = false;
+//  timeSliderHighMove = false;
+//}
 
 void keyReleased() {
   if (key == 'g' || key == 'G') {
@@ -598,61 +593,6 @@ void keyReleased() {
     map.ty = -128; 
   }
 }
-
-
-// see if we're over any buttons, otherwise tell the map to drag
-void mouseDragged() {
-  boolean hand = false;
-  if (gui) {
-    for (int i = 0; i < buttons.length; i++) {
-      hand = hand || buttons[i].mouseOver();
-      if (hand) break;
-    }
-  }
-  if (!hand) {
-    //map.mouseDragged(); 
-  }
-}
-
-// zoom in or out:
-void mouseWheel(int delta) {
-  float sc = 1.0;
-  if (delta < 0) {
-    sc = 1.05;
-  }
-  else if (delta > 0) {
-    sc = 1.0/1.05; 
-  }
-  float mx = (mouseX - mapOffset.x) - mapSize.x/2;
-  float my = (mouseY - mapOffset.y) - mapSize.y/2;
-  map.tx -= mx/map.sc;
-  map.ty -= my/map.sc;
-  map.sc *= sc;
-  map.tx += mx/map.sc;
-  map.ty += my/map.sc;
-}
-
-void mouseClicked() {
-  if (in.mouseOver()) {
-    map.zoomIn();
-  }
-  else if (out.mouseOver()) {
-    map.zoomOut();
-  }
-  else if (up.mouseOver()) {
-    map.panUp();
-  }
-  else if (down.mouseOver()) {
-    map.panDown();
-  }
-  else if (left.mouseOver()) {
-    map.panLeft();
-  }
-  else if (right.mouseOver()) {
-    map.panRight();
-  }
-}
-
 
 PVector lastTouchPos = new PVector();
 PVector lastTouchPos2 = new PVector();
@@ -679,6 +619,83 @@ void touchDown(int ID, float xPos, float yPos, float xWidth, float yWidth){
     touchID1 = ID;
     initTouchPos.x = xPos;
     initTouchPos.y = yPos;
+    if(yPos >= timeSliderButtonTop && yPos <= timeSliderButtonBottom){
+      if(xPos >= timeSliderLowLeft && xPos <= timeSliderLowRight){
+        mouseXOld = xPos;
+        timeSliderLowMove = true;
+      }
+      else if(xPos >= timeSliderHighLeft && xPos <= timeSliderHighRight){
+        mouseXOld = xPos;
+        timeSliderHighMove = true;
+      }
+    }
+    else if(mapIsShown){
+      if(heatMap){
+        if(xPos >= statesListLeft && xPos <= statesListLeft + statesListWidth && yPos >= statesListTop[0] && yPos <= statesListTop[states.length - 1] + statesListHeight) {
+          if(xPos >= statesListButtonLeft && xPos <= statesListButtonLeft + statesListButtonWidth){
+            if(yPos >= statesListButtonTop[0] && yPos <= statesListButtonTop[0] + statesListButtonHeight){
+              selectedState = statesFull[0];
+              updateDataState();
+            }
+            else if(yPos >= statesListButtonTop[states.length-1] && yPos <= statesListButtonTop[states.length-1] + statesListButtonHeight){
+              selectedState = statesFull[states.length-1];
+              updateDataState();
+            }
+            else{
+              for(int i = 1; i < statesListButtonTop.length-1; i++){
+                if(yPos >= statesListButtonTop[i] && yPos <= statesListButtonTop[i] + statesListButtonHeight){
+                  selectedState = statesFull[i];
+                  updateDataState();
+                }
+              }
+            }
+          }else{
+            statesListOldY = yPos;
+            statesListMove = true;
+          }
+        }
+      }
+      else{
+        if(xPos >= 0 && xPos < width/2){
+          map.tx += (xPos - lastTouchPos.x)/map.sc;
+          map.ty += (yPos - lastTouchPos.y)/map.sc;
+        }
+        if(viewingSpecificAccident){
+          if(xPos >= specificAccidentBackButtonLeft && xPos <= specificAccidentBackButtonLeft + specificAccidentBackButtonWidth && yPos >= specificAccidentBackButtonTop && yPos <= specificAccidentBackButtonTop + specificAccidentBackButtonHeight){
+            viewingSpecificAccident = false;
+          }
+          else if(xPos >= 0 && xPos < width/2){
+            crashClicked(xPos, yPos);
+          }
+        }
+        else{
+          if(accidents.size() > 0){
+            if(xPos >= accidentsListLeft && xPos <= accidentsListLeft + accidentsListWidth && yPos >= accidentsListTop.get(0) && yPos <= accidentsListTop.get(accidents.size() - 1) + accidentsListHeight) {
+              if(xPos >= accidentsListButtonLeft && xPos <= accidentsListButtonLeft + accidentsListButtonWidth){
+                for(int i = 0; i < accidentsListButtonTop.size(); i++){
+                  if(yPos >= accidentsListButtonTop.get(i) && yPos <= accidentsListButtonTop.get(i) + accidentsListButtonHeight){
+                    viewingSpecificAccident = true;
+                    specificAccident = i;
+                  }
+                }
+              }else{
+                accidentsListOldY = yPos;
+                accidentsListMove = true;
+              }
+            }
+            else if(xPos >= 0 && xPos <= width/2){
+              crashClicked(xPos, yPos);
+            }
+          }
+          else if(xPos >= 0 && xPos <= width/2){
+            crashClicked(xPos, yPos);
+          }
+        }
+      }
+      if(xPos >= toggleMapLeft && xPos <= toggleMapRight && yPos >= toggleMapTop && yPos <= toggleMapBottom){
+          heatMap = !heatMap;
+      }
+    }
   }
   else if( touchList.size() == 2 ){ // If second touch record initial position (for zooming). Saving ID 2 for later
     touchID2 = ID;
@@ -692,32 +709,10 @@ void touchMove(int ID, float xPos, float yPos, float xWidth, float yWidth){
   stroke(0,255,0);
   ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
   
-  if( touchList.size() < 2 ){
+  if( touchList.size() < 2 && !timeSliderLowMove && !timeSliderHighMove){
     // Only one touch, drag map based on last position
     map.tx += (xPos - lastTouchPos.x)/map.sc;
     map.ty += (yPos - lastTouchPos.y)/map.sc;
-  } else if( touchList.size() == 2 ){
-    // Only two touch, scale map based on midpoint and distance from initial touch positions
-    
-    float sc = dist(lastTouchPos.x, lastTouchPos.y, lastTouchPos2.x, lastTouchPos2.y);
-    float initPos = dist(initTouchPos.x, initTouchPos.y, initTouchPos2.x, initTouchPos2.y);
-    
-    PVector midpoint = new PVector( (lastTouchPos.x+lastTouchPos2.x)/2, (lastTouchPos.y+lastTouchPos2.y)/2 );
-    sc -= initPos;
-    sc /= 5000;
-    sc += 1;
-    //println(sc);
-    float mx = (midpoint.x - mapOffset.x) - mapSize.x/2;
-    float my = (midpoint.y - mapOffset.y) - mapSize.y/2;
-    map.tx -= mx/map.sc;
-    map.ty -= my/map.sc;
-    map.sc *= sc;
-    map.tx += mx/map.sc;
-    map.ty += my/map.sc;
-  } else if( touchList.size() >= 5 ){
-    
-    // Zoom to entire USA
-    map.setCenterZoom(locationUSA, 6);  
   }
   
   // Update touch IDs 1 and 2
@@ -741,4 +736,8 @@ void touchUp(int ID, float xPos, float yPos, float xWidth, float yWidth){
   
   // Remove touch and ID from list
   touchList.remove(ID);
+  statesListMove = false;
+  accidentsListMove = false;
+  timeSliderLowMove = false;
+  timeSliderHighMove = false;
 }// touchUp
