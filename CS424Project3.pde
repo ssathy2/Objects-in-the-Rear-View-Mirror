@@ -1,8 +1,10 @@
+import hypermedia.net.*;
+import omicronAPI.*;
+
 import com.modestmaps.*;
 import com.modestmaps.core.*;
 import com.modestmaps.geo.*;
 import com.modestmaps.providers.*;
-
 
 import controlP5.*;
 
@@ -14,7 +16,11 @@ DataBrowser db;
 PImage bgImage;
 PShape svg;
 
-
+//Touch setup
+OmicronAPI omicronManager;
+TouchListener touchListener;
+PApplet applet;
+boolean displayOnWall = false;
 
 //Boolean arrays to hold values of radiobuttons
 float[] driverAgeArr, driverGenderArr;
@@ -71,7 +77,22 @@ boolean heatMap = true;
 int dateMin = 2001;
 int dateMax = 2010;
 
-void setup() {
+public void init() {
+  super.init();
+  omicronManager = new OmicronAPI(this);      
+  if(displayOnWall) {
+      omicronManager.setFullscreen(true);
+  }
+}
+
+void setup() { 
+  applet = this;
+  touchListener = new TouchListener();
+  omicronManager.setTouchListener(touchListener);
+  if(displayOnWall) {    
+    omicronManager.ConnectToTracker(7001, 7340, "131.193.77.159");
+  }
+  
   // init databrowser obj
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
@@ -79,11 +100,11 @@ void setup() {
 //  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
-
+  
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
   displayHeight = WALLHEIGHT / 6 * scaleFactor;
-
+  
   size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
 
   cp5 = new ControlP5(this);
@@ -224,6 +245,7 @@ void setup() {
 }
 
 void draw() {
+  omicronManager.process(); //touch
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
 //  if(filtersHaveBeenChanged()){
 //    updateData();
@@ -447,3 +469,36 @@ void mouseReleased(){
   timeSliderLowMove = false;
   timeSliderHighMove = false;
 }
+
+
+void touchDown(int ID, float xPos, float yPos, float xWidth, float yWidth){
+  println("X: " + xPos + " Y: " + yPos);
+  noFill();
+  stroke(255,0,0);
+  ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
+  
+  cp5.getPointer().set(floor(xPos), floor(yPos));    
+  if(displayOnWall) {
+    cp5.getPointer().pressed();
+  }
+}// touchDown
+
+void touchMove(int ID, float xPos, float yPos, float xWidth, float yWidth){
+  println("X: " + xPos + " Y: " + yPos);
+  noFill();
+  stroke(0,255,0);
+  ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
+
+  cp5.getPointer().set(floor(xPos), floor(yPos));
+}// touchMove
+
+void touchUp(int ID, float xPos, float yPos, float xWidth, float yWidth){
+  println("X: " + xPos + " Y: " + yPos);
+  noFill();
+  stroke(0,0,255);
+  ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
+  cp5.getPointer().set(floor(xPos), floor(yPos));
+  if(displayOnWall) {
+    cp5.getPointer().released();
+  }
+}// touchUp
