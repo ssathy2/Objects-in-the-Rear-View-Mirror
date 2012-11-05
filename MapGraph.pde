@@ -96,7 +96,7 @@ void drawHeatMap() {
       rect(statesListButtonLeft, statesListButtonTop[i], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[i] + statesListButtonHeight);
       fill(40);
       textAlign(LEFT);
-      text("View", statesListButtonLeft+6*scaleFactor, statesListTop[i] + 2*statesListHeight/3);
+      text("Pick", statesListButtonLeft+6*scaleFactor, statesListTop[i] + 2*statesListHeight/3);
       fill(240);
       textAlign(LEFT);
       text(statesFull[i], statesListLeft+statesListButtonWidth+20*scaleFactor, statesListTop[i] + 2*statesListHeight/3);
@@ -119,7 +119,7 @@ void drawHeatMap() {
     rect(statesListButtonLeft, statesListButtonTop[0], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[0] + statesListButtonHeight);
     fill(40);
     textAlign(LEFT);
-    text("View", statesListButtonLeft+6*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
+    text("Pick", statesListButtonLeft+6*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
     fill(240);
     textAlign(LEFT);
     text(statesFull[0], statesListLeft+statesListButtonWidth+20*scaleFactor, statesListTop[0] + 2*statesListHeight/3);
@@ -139,7 +139,7 @@ void drawHeatMap() {
     rect(statesListButtonLeft, statesListButtonTop[states.length-1], statesListButtonLeft + statesListButtonWidth, statesListButtonTop[states.length-1] + statesListButtonHeight);
     fill(40);
     textAlign(LEFT);
-    text("View", statesListButtonLeft+6*scaleFactor, statesListTop[states.length-1] + 2*statesListHeight/3);
+    text("Pick", statesListButtonLeft+6*scaleFactor, statesListTop[states.length-1] + 2*statesListHeight/3);
     fill(240);
     textAlign(LEFT);
     text(statesFull[states.length-1], statesListLeft+statesListButtonWidth+20*scaleFactor, statesListTop[states.length-1] + 2*statesListHeight/3);
