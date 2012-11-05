@@ -836,6 +836,7 @@ void drawTimeSlider() {
 
   //TODO make it work for all date ranges (day, month, year)
   fill(235);
+  textSize(12*scaleFactor);
   if (timeScale == 1) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);

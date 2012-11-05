@@ -73,15 +73,12 @@ int dateMax = 2010;
 
 void setup() {
   // init databrowser obj
-<<<<<<< HEAD
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
   //  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
-=======
-  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
+//  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
->>>>>>> 3101d43dd71e19a7ea5fe3ff3577e27d30333507
 
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -191,8 +188,8 @@ void setup() {
   timeSliderTop = gPlotY2 + 45*scaleFactor; 
   timeSliderRight = gPlotX2 - 15*scaleFactor;
   timeSliderBottom = timeSliderTop + 5*scaleFactor;
-  timeSliderButtonTop = timeSliderTop - 45/2*scaleFactor;
-  timeSliderButtonBottom = timeSliderButtonTop + 45*scaleFactor;
+  timeSliderButtonTop = timeSliderTop - 15*scaleFactor;
+  timeSliderButtonBottom = timeSliderButtonTop + 30*scaleFactor;
   timeSliderLowLeft = timeSliderLeft - 15*scaleFactor;
   timeSliderLowRight = timeSliderLeft;
   timeSliderHighLeft = timeSliderRight;
@@ -309,7 +306,7 @@ void updateData(){
   for(int i = 0; i < states.length; i++){
     statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
-  for(int i = 2001; i < 2010; i++){
+  for(int i = 2001; i <= 2010; i++){
     statePoints.put((Integer)i, db.getMonthGeoDataForYear_new(selectedState, numFatal, i, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge));
   }
   
