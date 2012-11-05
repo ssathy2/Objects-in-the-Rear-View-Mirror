@@ -2,6 +2,10 @@
  part of the general ui */
 float timeSliderLeft, timeSliderRight, timeSliderTop, timeSliderBottom, timeSliderLowLeft, timeSliderButtonTop, timeSliderButtonBottom, timeSliderLowRight, timeSliderHighLeft, timeSliderHighRight, mouseXOld;
 int timeSliderPercentageLeft, timeSliderPercentageRight;
+/*int tsYearHigh, tsYearLow; 
+int tsMonthHigh, tsMonthLow; 
+int tsWeekdayHigh, tsWeekdayLow; 
+int tsHourHigh, tsHourLow; */
 
 boolean timeSliderLowMove = false;
 boolean timeSliderHighMove = false;
@@ -78,8 +82,8 @@ void drawLayoutMain() {
   drawClearFilterValuesButton();
 
   drawGraphSwitchButtons();
-
-  drawGraphLabels();
+  
+  drawHGraphLabel();
 }
 
 void checkIfAFilterMenuIsOpen()
@@ -816,8 +820,8 @@ void drawTimeSlider() {
 
   //Two slide buttons
   fill(70);
-  rect(timeSliderLowLeft, timeSliderButtonTop, timeSliderLowRight, timeSliderButtonBottom);
-  rect(timeSliderHighLeft, timeSliderButtonTop, timeSliderHighRight, timeSliderButtonBottom);
+  rect(timeSliderLowLeft, timeSliderButtonTop + (scaleFactor + 5), timeSliderLowRight, timeSliderButtonBottom);
+  rect(timeSliderHighLeft, timeSliderButtonTop + (scaleFactor + 5), timeSliderHighRight, timeSliderButtonBottom);
 
   //YellowBar
   fill(#FA8A11);                                        

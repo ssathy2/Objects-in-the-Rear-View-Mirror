@@ -11,12 +11,12 @@ import controlP5.*;
 
 final static int WALLWIDTH = 8160;
 final static int WALLHEIGHT = 2304;
-int displayWidth, displayHeight;
+int dWidth, dHeight;
 static int scaleFactor;
 DataBrowser db;
 PImage bgImage;
 PShape svg;
-
+PFont helvetica;
 
 
 //Boolean arrays to hold values of radiobuttons
@@ -109,6 +109,13 @@ public void init() {
 }
 
 void setup() { 
+ 
+  scaleFactor = (displayOnWall)?6:1; // 1 for widescreen monitors and 6 for the wall
+  dWidth = (WALLWIDTH / 6) * scaleFactor;
+  dHeight = (WALLHEIGHT / 6) * scaleFactor;
+
+  size(dWidth, dHeight, JAVA2D);
+  
   applet = this;
   touchListener = new TouchListener();
   omicronManager.setTouchListener(touchListener);
@@ -122,11 +129,6 @@ void setup() {
   // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
-  scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
-  displayWidth = WALLWIDTH / 6 * scaleFactor;
-  displayHeight = WALLHEIGHT / 6 * scaleFactor;
-
-  size(scaleFactor * displayWidth, scaleFactor * displayHeight, JAVA2D);
 
   cp5 = new ControlP5(this);
 
@@ -136,15 +138,15 @@ void setup() {
   textFont(helvetica);
 
   bgImage = loadImage("bg.jpg");
-  bgImage.resize(displayWidth * scaleFactor, displayHeight * scaleFactor);
+  bgImage.resize(dWidth * scaleFactor, dHeight * scaleFactor);
   background(bgImage);
 
   gPlotX1 = scaleFactor * 100;
   gPlotY1 = scaleFactor * 70;
-  //  gPlotX2 = displayWidth - 300*scaleFactor;
-  //  gPlotY2 = displayHeight - 140*scaleFactor;
-  gPlotX2 = displayWidth - 190*scaleFactor;
-  gPlotY2 = displayHeight - 70*scaleFactor;
+  //  gPlotX2 = dWidth - 300*scaleFactor;
+  //  gPlotY2 = dHeight - 140*scaleFactor;
+  gPlotX2 = dWidth - 190*scaleFactor;
+  gPlotY2 = dHeight - 70*scaleFactor;
 
   chosenMainFilterArr = new boolean[8];       //Holds at most one true element, this element indicates the main filter.
 
@@ -272,7 +274,9 @@ void setup() {
   
   addMouseWheelListener(new java.awt.event.MouseWheelListener() { 
     public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) { 
-      mouseWheel(evt.getWheelRotation());
+      if(evt != null) {
+        mouseWheel(evt.getWheelRotation());
+      }
     }
   }); 
 }
@@ -300,7 +304,9 @@ void draw() {
       if (gui) {
         for (int i = 0; i < buttons.length; i++) {
           buttons[i].draw();
-          hand = hand || buttons[i].mouseOver();
+          if(buttons[i] != null) {
+            hand = hand || buttons[i].mouseOver();
+          }
         }
       }
       
@@ -326,9 +332,6 @@ void draw() {
           map.sc *= 1.0/1.05;
         }
       }
-      
-      
-  
       drawTimeSlider();
     }
   }
