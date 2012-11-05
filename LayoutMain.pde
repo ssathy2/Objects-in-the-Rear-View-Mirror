@@ -648,8 +648,16 @@ void drawTimeSlider(){
   fill(240);
   textAlign(CENTER);
   textSize(12*scaleFactor);
-  text(Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100) + "%", timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
-  text(Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*100) + "%", timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+  //TODO make it work for all date ranges (day, month, year)
+  int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
+  int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
+  text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+  text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 10*scaleFactor);
+  if(tempDateMin != dateMin || tempDateMax != dateMax){
+    dateMin = tempDateMin;
+    dateMax = tempDateMax;
+    updateDataNewRange();
+  }
 }
 
 

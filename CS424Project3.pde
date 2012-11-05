@@ -68,9 +68,9 @@ int dateMax = 2010;
 
 void setup() {
   // init databrowser obj
-  //db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+//  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -210,7 +210,6 @@ void draw() {
       drawGLayout();
       drawHeatMap();
     }else{
-      
       background(40);
       drawPlotMap();
     }
@@ -242,17 +241,23 @@ void clearData(){
 }
 
 void updateData(){
-  for(int o = 0; o < dateMax - dateMin; o++){
-    for(int i = 0; i < states.length; i++){
-      HashMap<Integer, Integer> tempo = db.getCrashMonthNumbersForYear(statesFull[i], dateMin + o, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100);
-      int total = 0;
-      for(int j = 0; j < tempo.size(); j++){
-        if (tempo.get(j) != null){
-          total += tempo.get(j);
-        }
+  statesValues.clear();
+  for(int i = 0; i < states.length; i++){
+    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100));
+  }
+  updateDataNewRange();
+}
+
+void updateDataNewRange(){
+  clearData();
+  for(int i = 0; i < states.length; i++){
+    int total = 0;
+    for(int j = dateMin; j <= dateMax; j++){
+      if (statesValues.get(statesFull[i]).get(j) != null){
+        total += statesValues.get(statesFull[i]).get(j);
       }
-      statesValue[i] += total;
     }
+    statesValue[i] += total;
   }
   
   for(int i = 0; i < states.length-1; i++){
