@@ -268,6 +268,10 @@ void clear() {          // Method to clear enabled filters in currently open fil
   }
 }
 
+void Number_of_People_Involved(int theValue) {
+  numFatal = theValue;
+  shouldGetNewData = true;
+}
 
 
 //
@@ -380,12 +384,12 @@ public void controlEvent(ControlEvent theEvent) {
           resetSubFilterGroups();
 
         cp5.getGroup("g1Second1").setVisible(!cp5.getGroup("g1Second1").isVisible());
-
+        
         if (cp5.getGroup("g1Second1").isVisible() && theEvent.isFrom(driverAge)) {
-
           driverAgeArr = driverAge.getArrayValue();
-          for (float i: driverAgeArr)
-            println("Driver Age: " + i);
+          for (float j: driverAgeArr) {
+            println("Driver Age: " + j);
+          }
         }
 
         break;
@@ -465,12 +469,24 @@ public void controlEvent(ControlEvent theEvent) {
       
     }
     if (theEvent.isFrom(driverAge)) {
-
       driverAgeArr = driverAge.getArrayValue();
-
-      for (int i = 0; i < driverAgeArr.length; i++) {
-        println("driverAgeArr[" + i + "] = " + driverAgeArr[i]);
+      currentAges.clear();
+      for (int j = 0; j < driverAgeArr.length; j++) {
+        println("driverAgeArr[" + j + "] = " + driverAgeArr[j]);
+        // want to add age ranges that aren't continuous
+        if(driverAgeArr[j] == 1) {
+          switch(j) {
+            case 0: for(int i=16; i <= 25;i++) currentAges.add(i); break;
+            case 1: for(int i=26; i <= 35;i++) currentAges.add(i); break;
+            case 2: for(int i=36; i <= 45;i++) currentAges.add(i); break;
+            case 3: for(int i=46; i <= 55;i++) currentAges.add(i); break;
+            case 4: for(int i=56; i <= 65;i++) currentAges.add(i); break;
+            case 5: for(int i=66; i <= 75;i++) currentAges.add(i); break;
+            case 6: for(int i=75; i <= 100;i++) currentAges.add(i); break;
+          }
+        }
       }
+      shouldGetNewData = true;
     }
 
     if (theEvent.isFrom(driverGender)) {
@@ -625,6 +641,8 @@ public void controlEvent(ControlEvent theEvent) {
     }
   }
 }
+
+
 
 void resetSubFilterGroups() {
 

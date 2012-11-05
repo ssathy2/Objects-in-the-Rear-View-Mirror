@@ -34,6 +34,7 @@ ArrayList<String> currentBodyTypes;
 ArrayList<String> currentWeatherConds;
 ArrayList<String> currentSurfaceConds;
 ArrayList<String> currentARF;
+ArrayList<Integer> currentAges;
 String[] currentMainFilterValues;
 String[] currentSubFilterValues;
 
@@ -41,10 +42,11 @@ boolean showMale;
 boolean showFemale;
 int currentYear;
 int currentMonth;
-int currentDay;
+int currentDayOfWeek;
 int currentHour;
 int startAge;
 int endAge;
+int numFatal;
 String currentState;
 // Bool to make sure we don't go to the Data frequently
 boolean shouldGetNewData;
@@ -68,9 +70,9 @@ int dateMax = 2010;
 
 void setup() {
   // init databrowser obj
-  //db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
+  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
   // Local DB access for now
-    db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
+  //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
   scaleFactor = 1; // 1 for widescreen monitors and 6 for the wall
   displayWidth = WALLWIDTH / 6 * scaleFactor;
@@ -176,21 +178,25 @@ void setup() {
   timeSliderHighLeft = timeSliderRight;
   timeSliderHighRight = timeSliderRight+15*scaleFactor;
 
+  // lists to keep track of what current filters are selected
   currentIntoxicants = new ArrayList<String>();
   currentBodyTypes = new ArrayList<String>();
   currentWeatherConds = new ArrayList<String>();
   currentSurfaceConds = new ArrayList<String>();
   currentARF = new ArrayList<String>();
+  currentAges = new ArrayList<Integer>();
   
+  // keep track of some other things - when to load new data, showmale, show female, etc.
   shouldGetNewData = true;
   showMale = true;
   showFemale = true;
   startAge = 0;
+  numFatal = 1;
   endAge = Integer.MAX_VALUE;
   currentState = "illinois";
   timeScale = 1;
   currentYear = 2001;
-  currentDay = 1;
+  currentDayOfWeek = 1;
   currentMonth = 1;
   currentHour = 1;
 
@@ -243,7 +249,7 @@ void clearData(){
 void updateData(){
   statesValues.clear();
   for(int i = 0; i < states.length; i++){
-    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100));
+    statesValues.put(statesFull[i], db.getCrashNumbersForYearRange(statesFull[i], numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, 0, 100));
   }
   updateDataNewRange();
 }

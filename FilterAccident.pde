@@ -70,10 +70,10 @@ void drawAccidentFilterControllers() {
 
   //cp5.add
 
-  cp5.addSlider("Number of\nPeople\nInvolved")
+  cp5.addSlider("Number_of_People_Involved")
     .setPosition(scaleFactor * 20,scaleFactor *  5)
       .setSize(scaleFactor * 20,scaleFactor *  160)
-        .setRange(0, 10)
+        .setRange(1, 10)
           .setNumberOfTickMarks(10)
             .setGroup(g5Second1)
               ;
