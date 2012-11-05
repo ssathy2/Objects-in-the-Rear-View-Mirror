@@ -15,8 +15,11 @@ void drawAccidentFilterControllers() {
       .setPosition(scaleFactor * 10,scaleFactor *  20)
         .setGroup(g5)
           .setId(1)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
+              
+             // cp5.getController("No. of People Involved")
+              //.getCaptionLabel().setFont(cp5Font);
 
 
   cp5.addBang("Vehicle Related factors")
@@ -24,7 +27,7 @@ void drawAccidentFilterControllers() {
       .setPosition(scaleFactor * 10,scaleFactor *  70)
         .setGroup(g5)
           .setId(2)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
   cp5.addBang("Surface Conditions")
@@ -32,7 +35,7 @@ void drawAccidentFilterControllers() {
       .setPosition(scaleFactor * 10, scaleFactor *  120)
         .setGroup(g5)
           .setId(3)
-            .getCaptionLabel().align(CENTER, CENTER)
+            .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font)
               ;
 
 
@@ -70,12 +73,13 @@ void drawAccidentFilterControllers() {
 
   //cp5.add
 
-  cp5.addSlider("Number of\nPeople\nInvolved")
+  cp5.addSlider("Number_of_People_Involved")
     .setPosition(scaleFactor * 20,scaleFactor *  5)
       .setSize(scaleFactor * 20,scaleFactor *  160)
-        .setRange(0, 10)
+        .setRange(1, 10)
           .setNumberOfTickMarks(10)
             .setGroup(g5Second1)
+            .getCaptionLabel().setFont(cp5Font)
               ;
 
 

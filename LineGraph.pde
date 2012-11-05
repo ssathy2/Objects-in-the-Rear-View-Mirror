@@ -109,17 +109,16 @@ void drawLineGraph() {
 
       switch(timeScale) {
       case 1: 
-        plotData = db.getCrashNumbersForYearRange(currentState, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
+        plotData = db.getCrashNumbersForYearRange(currentState, numFatal, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
         break;
       case 2: 
-        plotData = db.getCrashMonthNumbersForYear(currentState, currentYear, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
-
+        plotData = db.getCrashMonthNumbersForYear(currentState, numFatal, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
         break;
       case 3: 
-        plotData = db.getCrashHourNumbersForMonthDayYear(currentState, currentDay, currentMonth, currentYear, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
+        plotData = db.getCrashDayNumbersForMonthYear(currentState, numFatal, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
         break;
       case 4: 
-        plotData = db.getCrashHourNumbersForMonthDayYear(currentState, currentDay, currentMonth, currentYear, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
+        plotData = db.getCrashHourNumbersForMonthDayYear(currentState, numFatal, currentDayOfWeek, currentMonth, currentYear, currentAges, currentSurfaceConds, currentWeatherConds, currentBodyTypes, currentARF, currentIntoxicants, showMale, showFemale, startAge, endAge);
         break;
       }   
 

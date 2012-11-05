@@ -6,8 +6,8 @@ void drawWeatherFilterControllers() {
 
   Group g3 = cp5.addGroup("g3")//Weather Variables
     .setPosition(firstFilterTabPlotX - (scaleFactor * 235), firstFilterTabPlotY + (scaleFactor * 35))
-      .setBackgroundHeight(195)
-        .setWidth(230)
+      .setBackgroundHeight(scaleFactor *195)
+        .setWidth(scaleFactor *230)
           .hideBar()
             .setBackgroundColor(color(240, 90))
               // .activateEvent(false)
@@ -15,9 +15,9 @@ void drawWeatherFilterControllers() {
                 ;
 
  weather = cp5.addCheckBox("weather")
-    .setPosition(10, 20)
-      .setSize(30, 30)
-        .setSpacingColumn(90)
+    .setPosition(scaleFactor *10,scaleFactor * 20)
+      .setSize(scaleFactor *30,scaleFactor * 30)
+        .setSpacingColumn(scaleFactor *90)
           .setItemsPerRow(2)
             .setColorForeground(#FFFFFF)
               .setColorActive(0xffff0000)
@@ -35,4 +35,3 @@ void drawWeatherFilterControllers() {
                                       .setGroup(g3)
                                         ;
 }
-
