@@ -71,7 +71,7 @@ class DataBrowser {
   
   private void initializeSurfcondHashMap() {
     surfCond = new HashMap<String, Integer>();
-    surfCond.put("Wet", 2); surfCond.put("Snowy", 3); surfCond.put("Icy", 4); surfCond.put("Dirt", 5); surfCond.put("Other", 8);      
+    surfCond.put("Wet", 2); surfCond.put("Snowy", 3); surfCond.put("Icy", 4); surfCond.put("Dirt", 5); surfCond.put("Other Condition", 8);      
   }
   
   private void initializeBodyHashMap() {
