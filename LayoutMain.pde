@@ -727,7 +727,9 @@ public void controlEvent(ControlEvent theEvent) {
         }
       }
     }
-    updateData();
+    if(mapIsShown) {
+      updateData();
+    }
   }
 }
 
@@ -828,9 +830,9 @@ void drawTimeSlider() {
   rect(timeSliderLowRight, timeSliderButtonTop + (scaleFactor * 30), timeSliderHighLeft, timeSliderButtonBottom - (scaleFactor * 5));
 
   //Two percentage blocks
-  fill(0);
-  rect(timeSliderLowLeft - 30*scaleFactor, timeSliderButtonTop - 25*scaleFactor, timeSliderLowRight, timeSliderButtonTop - 5*scaleFactor);
-  rect(timeSliderHighLeft, timeSliderButtonTop - 25*scaleFactor, timeSliderHighRight + 30*scaleFactor, timeSliderButtonTop - 5*scaleFactor);
+  //fill(0);
+  //rect(timeSliderLowLeft - 30*scaleFactor, timeSliderButtonTop - 25*scaleFactor, timeSliderLowRight, timeSliderButtonTop - 5*scaleFactor);
+  //rect(timeSliderHighLeft, timeSliderButtonTop - 25*scaleFactor, timeSliderHighRight + 30*scaleFactor, timeSliderButtonTop - 5*scaleFactor);
   /*
   //percentage values
    fill(240);
@@ -845,8 +847,8 @@ void drawTimeSlider() {
   if (timeScale == 1) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(2010-2001)+2001);
-    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
@@ -856,8 +858,8 @@ void drawTimeSlider() {
   else if (timeScale == 2) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(12-1)+1);
-    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
@@ -867,8 +869,8 @@ void drawTimeSlider() {
   else if (timeScale == 3) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(7-1)+1);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(7-1)+1);
-    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
@@ -878,8 +880,8 @@ void drawTimeSlider() {
   else if (timeScale == 4) {
     int tempDateMin = Math.round((timeSliderLowRight - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
     int tempDateMax = Math.round((timeSliderHighLeft - timeSliderLeft)/(timeSliderRight - timeSliderLeft)*(24-1)+1);
-    text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
-    text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMin, timeSliderLowRight - 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
+    //text(tempDateMax, timeSliderHighLeft + 22*scaleFactor, timeSliderButtonTop - 20*scaleFactor);
     if (tempDateMin != dateMin || tempDateMax != dateMax) {
       dateMin = tempDateMin;
       dateMax = tempDateMax;
