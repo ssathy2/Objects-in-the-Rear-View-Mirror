@@ -76,7 +76,7 @@ Button[] buttons = {
 OmicronAPI omicronManager;
 TouchListener touchListener;
 PApplet applet;
-boolean displayOnWall = false;
+boolean displayOnWall = true;
 
 boolean gui = true;
 boolean onWall = true;
@@ -226,7 +226,7 @@ void setup() {
 //  mapSize = new PVector( width/2, 2000 );
 //  mapOffset = new PVector( width/4, 150 );
     
-  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 100*scaleFactor, 100*scaleFactor);
+  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 100*scaleFactor, height);
   setMapProvider(0);
   map.setCenterZoom(locationUSA, 6); 
 
@@ -265,6 +265,8 @@ void setup() {
   currentMonth = 1;
   currentHour = 1;
 
+  helpMenuChosen = false;
+
   drawLayoutMain();
   
   clearData();
@@ -274,62 +276,11 @@ void setup() {
 void draw() {
   omicronManager.process(); //touch
   checkIfAFilterMenuIsOpen(); //to determine if subFilterLegend should appear yet or not.
-//  if(filtersHaveBeenChanged()){
-//    updateData();
-//  }
-  if (mapIsShown){
-    drawMainFilterLegend();
-    if(heatMap){
-      background(bgImage);
-      drawGLayout();
-      drawMainFilterLegend();
-      drawTimeSlider();
-      drawHeatMap();
-    }
-    else {
-      background(40);
-      drawTimeSlider();
-      drawPlotMap();
-      boolean hand = false;
-      if (gui) {
-        for (int i = 0; i < buttons.length; i++) {
-          buttons[i].draw();
-          hand = hand || buttons[i].mouseOver();
-        }
-      }
-      
-      if (keyPressed) {
-        if (key == CODED) {
-          if (keyCode == LEFT) {
-            map.tx += 5.0/map.sc;
-          }
-          else if (keyCode == RIGHT) {
-            map.tx -= 5.0/map.sc;
-          }
-          else if (keyCode == UP) {
-            map.ty += 5.0/map.sc;
-          }
-          else if (keyCode == DOWN) {
-            map.ty -= 5.0/map.sc;
-          }
-        }  
-        else if (key == '+' || key == '=') {
-          map.sc *= 1.05;
-        }
-        else if (key == '_' || key == '-' && map.sc > 2) {
-          map.sc *= 1.0/1.05;
-        }
-      }
-      drawTimeSlider();
-    }
-    fill(240);
-    rect(toggleMapLeft, toggleMapTop, toggleMapRight, toggleMapBottom);
-    fill(40);
-    textSize(18*scaleFactor);
-    textAlign(CENTER);
-    text("View\nState", toggleMapLeft + (toggleMapRight - toggleMapLeft)/2, toggleMapTop + (toggleMapBottom - toggleMapTop)/3);
-  }
-  else {
+  //  if(filtersHaveBeenChanged()){
+  //    updateData();
+  //  }
+  if (helpMenuChosen) {
+    drawHelpMenu();
     background(bgImage);
     drawGLayout();
     drawMainFilterLegend();
@@ -337,6 +288,70 @@ void draw() {
     drawLineGraph();
     if (subFilterValueChosen)
       drawSubFilterLegend();
+  }
+  else {
+
+    if (mapIsShown) {
+      drawMainFilterLegend();
+      if (heatMap) {
+        background(bgImage);
+        drawGLayout();
+        drawMainFilterLegend();
+        drawTimeSlider();
+        drawHeatMap();
+      }
+      else {
+        background(40);
+        drawTimeSlider();
+        drawPlotMap();
+        boolean hand = false;
+        if (gui) {
+          for (int i = 0; i < buttons.length; i++) {
+            buttons[i].draw();
+            hand = hand || buttons[i].mouseOver();
+          }
+        }
+
+        if (keyPressed) {
+          if (key == CODED) {
+            if (keyCode == LEFT) {
+              map.tx += 5.0/map.sc;
+            }
+            else if (keyCode == RIGHT) {
+              map.tx -= 5.0/map.sc;
+            }
+            else if (keyCode == UP) {
+              map.ty += 5.0/map.sc;
+            }
+            else if (keyCode == DOWN) {
+              map.ty -= 5.0/map.sc;
+            }
+          }  
+          else if (key == '+' || key == '=') {
+            map.sc *= 1.05;
+          }
+          else if (key == '_' || key == '-' && map.sc > 2) {
+            map.sc *= 1.0/1.05;
+          }
+        }
+        drawTimeSlider();
+      }
+      fill(240);
+      rect(toggleMapLeft, toggleMapTop, toggleMapRight, toggleMapBottom);
+      fill(40);
+      textSize(18*scaleFactor);
+      textAlign(CENTER);
+      text("View\nState", toggleMapLeft + (toggleMapRight - toggleMapLeft)/2, toggleMapTop + (toggleMapBottom - toggleMapTop)/3);
+    }
+    else {
+      background(bgImage);
+      drawGLayout();
+      drawMainFilterLegend();
+      drawTimeSlider();
+      drawLineGraph();
+      if (subFilterValueChosen)
+        drawSubFilterLegend();
+    }
   }
 }
 

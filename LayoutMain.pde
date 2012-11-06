@@ -7,11 +7,17 @@ int tsMonthHigh, tsMonthLow;
 int tsWeekdayHigh, tsWeekdayLow; 
 int tsHourHigh, tsHourLow; */
 
+
+float clearButtonX, clearButtonY;
+
 boolean timeSliderLowMove = false;
 boolean timeSliderHighMove = false;
 
+Bang helpButton;
+
 PFont pFont;
 PFont toggleFont;
+PFont creditsFont;
 ControlFont cp5Font;
 
 //Method to draw 6 filter category tabs to the right of the graph... these are actually cp5 buttons, not tabs
@@ -22,9 +28,7 @@ boolean subFilterValueChosen;    //boolean for toggling visibility of subfilters
 
 boolean potentialMainFilter;
 boolean mainFilterChosen;
-/*PImage[] imgs = {
- loadImage("contact.png"), loadImage("wheel.png"), loadImage("weather.png"), loadImage("clock.png"), loadImage("emergency.png"), loadImage("drugs.png")
- }; */
+
 
 float firstFilterTabPlotX, firstFilterTabPlotY;
 float graphSwitchTopPlotY, graphSwitchTopPlotX;
@@ -47,6 +51,7 @@ void drawLayoutMain() {
   //Font to use with all ControlP5 controllers
   pFont = createFont("Calibri Bold", scaleFactor *18, true); // use true/false for smooth/no-smooth
   toggleFont = createFont("Calibri Bold", scaleFactor * 9, true);
+    creditsFont = createFont("Calibri Bold", scaleFactor * 12, true);
   cp5Font = new ControlFont(pFont, scaleFactor *  9);
 
   cp5.setControlFont(toggleFont);
@@ -77,7 +82,9 @@ void drawLayoutMain() {
 
   drawStateSelectionController();
   drawHelpButton();
-  drawNationalAverageButton();
+  //drawNationalAverageButton();
+
+drawHelpMenu();
 
   drawClearFilterValuesButton();
 
@@ -143,6 +150,9 @@ void drawHelpButton() {
 
 void drawClearFilterValuesButton() {
 
+  clearButtonX = gPlotX2 - (scaleFactor * 115);
+  clearButtonY = gPlotY2 + (scaleFactor * 4);
+  
   cp5.addBang("clear")
     .setPosition(gPlotX2 - (scaleFactor * 115), gPlotY2 + (scaleFactor * 4))
       .setSize(scaleFactor * 100, scaleFactor * 30)
@@ -231,7 +241,7 @@ void drawGraphSwitchButtons() {
               .setPosition(0, 0)
                 .setGroup(graphSwitchGroup)
                   .setColorActive(#025CE8)
-                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
+                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(8 * scaleFactor);
 
 
   cp5.addButton("Graph")
@@ -243,7 +253,7 @@ void drawGraphSwitchButtons() {
               .setPosition(0, scaleFactor * 101)
                 .setGroup(graphSwitchGroup)
                   .setColorActive(#FC1C1C)
-                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(15);
+                    .getCaptionLabel().align(CENTER, CENTER).setFont(cp5Font).setSize(8 * scaleFactor);
 }
 
 
@@ -327,6 +337,17 @@ public void controlEvent(ControlEvent theEvent) {
 
 
   if (theEvent.isController()) {
+    println(theEvent.getController().getName());
+    if(theEvent.getController().getName() == "Help"){
+      println("asd");
+      cp5.getGroup("helpBox")
+      .setVisible(true);
+    }
+    if(theEvent.getController().getName() == "backButton"){
+      cp5.getGroup("helpBox")
+      .setVisible(false);
+    }
+    
     if (theEvent.getController().getParent().getName() == "graphSwitchGroup") {    //Control events for the map/graph switch buttons
 
       println("Entered graphSwitchGroup group condition.");
