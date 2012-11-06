@@ -1,4 +1,3 @@
-import de.bezier.data.sql.*;
 /*
   Class that interacts with DB to get data based on the methods in the class
   TODO: CACHING BRO
@@ -485,7 +484,13 @@ class DataBrowser {
       }  
      
      if(!drugsArr.isEmpty()) {
-      query += " and idrugres1 in (";     
+      if(drugsArr.size() == 1 && drugsArr.contains("Alcohol")) {
+       if (drugsArr.contains("Alcohol")) {
+         query += " and ialcres between 8 and 94";
+       }  
+      }
+      else {
+        query += " and idrugres1 in (";     
       int t=0;
       for (String drugName : drugs.keySet()) {
         for(int j = 0; j < drugsArr.size(); j++) {
@@ -505,9 +510,10 @@ class DataBrowser {
           }
         }
         query += ")";
-       if (drugsArr.contains("Alcohol")) {
+        if (drugsArr.contains("Alcohol")) {
          query += " and ialcres between 8 and 94";
-       } 
+         }  
+      }
       }
       if(!includeMale || !includeFemale) {
         if(includeMale) query += " and isex=1";

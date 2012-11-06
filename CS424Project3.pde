@@ -1,5 +1,7 @@
 import hypermedia.net.*;
 import omicronAPI.*;
+import de.bezier.data.sql.*;
+import processing.net.*;
 
 import com.modestmaps.*;
 import com.modestmaps.core.*;
@@ -124,9 +126,6 @@ void setup() {
   }
   db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "omgtracker.evl.uic.edu");
   // Local DB access for now
-  //  db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
-//  db = new DataBrowser(this, "cs424", "cs424", "crash_data_group3", "131.193.77.110");
-  // Local DB access for now
   //db = new DataBrowser(this, "root", "lexmark9", "crash_data", "127.0.0.1");
 
   cp5 = new ControlP5(this);
@@ -137,7 +136,7 @@ void setup() {
   textFont(helvetica);
 
   bgImage = loadImage("bg.jpg");
-  bgImage.resize(dWidth * scaleFactor, dHeight * scaleFactor);
+  bgImage.resize(width, height);
   background(bgImage);
 
   gPlotX1 = scaleFactor * 100;
@@ -227,7 +226,7 @@ void setup() {
 //  mapSize = new PVector( width/2, 2000 );
 //  mapOffset = new PVector( width/4, 150 );
     
-  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 10*scaleFactor, 10*scaleFactor);
+  map = new InteractiveMap(this, new Microsoft.RoadProvider(), width/3-100*scaleFactor, height/2, 100*scaleFactor, 100*scaleFactor);
   setMapProvider(0);
   map.setCenterZoom(locationUSA, 6); 
 
@@ -702,12 +701,19 @@ void touchDown(int ID, float xPos, float yPos, float xWidth, float yWidth){
     initTouchPos2.x = xPos;
     initTouchPos2.y = yPos;
   }
+  
+  cp5.getPointer().set(floor(xPos), floor(yPos));
+  if(displayOnWall) {
+    cp5.getPointer().pressed();  
+  }
 }// touchDown
 
 void touchMove(int ID, float xPos, float yPos, float xWidth, float yWidth){
   noFill();
   stroke(0,255,0);
   ellipse( xPos, yPos, xWidth * 2, yWidth * 2 );
+  
+  cp5.getPointer().set(floor(xPos), floor(yPos));  
   
   if( touchList.size() < 2 && !timeSliderLowMove && !timeSliderHighMove){
     // Only one touch, drag map based on last position
@@ -740,4 +746,9 @@ void touchUp(int ID, float xPos, float yPos, float xWidth, float yWidth){
   accidentsListMove = false;
   timeSliderLowMove = false;
   timeSliderHighMove = false;
+  
+  cp5.getPointer().set(floor(xPos), floor(yPos));
+  if(displayOnWall) {
+    cp5.getPointer().released();  
+  }
 }// touchUp
