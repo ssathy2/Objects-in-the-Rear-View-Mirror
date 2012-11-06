@@ -3,3 +3,5 @@ data/.DS_Store
 *.sql
 
 *.orig
+
+.DS_Store
