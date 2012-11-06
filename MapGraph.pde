@@ -202,7 +202,7 @@ void drawHeatMap() {
 
 
 void drawPlotMap(){
-  strokeWeight((float)((map.sc) * scaleFactor) / 33);
+  strokeWeight((float)((map.sc) * scaleFactor) / (33 * scaleFactor));
   rectMode(CORNERS);
   map.draw();
   fill(#FA8A11);
